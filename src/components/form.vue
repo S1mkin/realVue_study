@@ -28,6 +28,20 @@
         <br>
         <br>
 
+        <template v-if="queueMsg.length">
+              <div 
+                v-for="msg in queueMsg"
+                v-bind:key="msg.id"
+              >
+                  <div v-bind:class="msg.type">{{ msg.msg }}</div>
+              </div>
+        </template>
+
+
+
+        <br>
+        <br>
+
         <ul class="list-group">
             <li
                 is="taskItem"
@@ -48,6 +62,7 @@
 <script>
 
 import taskItem from './task-item.vue'
+import { setTimeout } from 'timers';
 
 export default {
   name: "mForm",
@@ -72,16 +87,33 @@ export default {
                 title: 'Подстричь газон'
             }
         ],
-        nextTaskId: 4
+        nextTaskId: 4,
+        queueMsg: [] // type and msg
     }
   },
   methods: {
     addTask: function () {
-      this.tasks.push({
-        id: this.nextTaskId++,
-        title: this.newTaskText
-      })
-      this.newTaskText = ''
+      if (this.newTaskText != '') {
+        this.tasks.push({
+          id: this.nextTaskId++,
+          title: this.newTaskText
+        })
+        this.newTaskText = ''
+        this.queueMsg.push({
+          type: 'alert alert-success',
+          msg: 'Task add...'
+        })
+      } else {
+        this.queueMsg.push({
+          type: 'alert alert-danger',
+          msg: 'Task is empty...'
+        })
+      }
+
+      setTimeout(() => {
+        this.queueMsg = []
+      }, 2000)
+
     }
   }
 };
