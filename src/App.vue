@@ -3,21 +3,22 @@
     <img alt="Vue logo" src="./assets/logo.png">
     <HelloWorld msg="Vue.js App"/>
     <mForm caption="Task Manager"/>
-    <cubes/>
+    <br>
+    <cubesTest/>
   </div>
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
 import mForm from './components/form.vue'
-import cubes from './components/cubes.vue'
+import cubesTest from './components/cubesTest.vue'
 
 export default {
   name: 'app',
   components: {
     HelloWorld,
     mForm,
-    cubes
+    cubesTest
   }
 }
 </script>
