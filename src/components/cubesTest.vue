@@ -14,7 +14,11 @@
         </div>
 
         <div id="cubes-line-wrap">
-            <div v-for="lCube in lineCubes" v-bind:key="lCube.id">
+            <div 
+                v-for="lCube in lineCubes" 
+                v-bind:key="lCube.id"
+                v-bind:class="{red: lCube==1, blue: lCube==2, green: lCube==3, yellow: lCube==4}"
+            >
                 {{lCube}}
             </div>
         </div>
@@ -27,16 +31,13 @@
 
 <script>
 
-var aCubes = [];
+var aCubes = []
 var Xmax = 15
 var Ymax = 13
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
-
-
-
 
 for (var i = 0; i < Ymax; i++) {
    aCubes[i] = [];
@@ -49,19 +50,35 @@ export default {
   name: "cubes",
   data() {
     return {
-        cubes: aCubes,
+        cubes: [],
         lineCubes: [] 
     }
   },
   methods: {
-      generateLine: function(){
-          this.lineCubes.push(2);
+
+      addCubeOnLine: function(){
+          if (this.lineCubes.length >= Xmax) {
+              this.cubes.push([...this.lineCubes])
+              this.lineCubes.splice(0)
+          } else {
+            this.lineCubes.push(getRandomInt(0, 5))
+          }
       },
+
+      generateLine: function(){
+
+            
+
+
+        var Timer = setInterval(() => {
+            this.addCubeOnLine()
+        }, 500)
+        
+        
+      },
+
       cubeClick: function(x,y){
-          //console.log('cubeClick: '+ x + ' ' + y);
-
-
-          this.cubes[y].splice(x, 1, 0);
+          this.cubes[y].splice(x, 1, 0); // delete cube
       }
   }
 }
