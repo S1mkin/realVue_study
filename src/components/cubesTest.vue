@@ -1,15 +1,15 @@
 <template>
     <div>
-        <div id="cubesWrap">
-            <div v-for="(cubeRow, y) in cubes" v-bind:key="cubeRow.id">
+        <div id="cubes-wrap">
+            <div v-for="(cubeRow, x) in cubes" v-bind:key="cubeRow.id" class="cubes-col">
                 <div 
-                    v-for="(cube, x) in cubeRow" 
+                    v-for="(cube, y) in cubeRow" 
                     v-bind:key="cube.id"
-                    v-bind:class="{red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
-                    v-on:click="cubeClick(x,y)"
+                    v-bind:class="{cubes, red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
+                    v-on:click="cubeClick(y,x)"
                     v-show="cube"
                 >
-                    {{cube}}-{{x}}/{{y}}
+                    {{x}}/{{y}}
                 </div>
             </div>
         </div>
@@ -27,6 +27,53 @@
         <br>
 
         <button v-on:click.prevent="generateLine">Начать</button>
+
+
+        <div id="cubes-wrap">
+            <div class="cubes-col">
+                <div class="cubes">1.1</div>
+                <div class="cubes">1.2</div>
+                <div class="cubes">1.3</div>
+                <div class="cubes">1.4</div>
+                <div class="cubes">1.5</div>
+            </div>
+            <div class="cubes-col">
+                <div class="cubes">2.1</div>
+                <div class="cubes">2.2</div>
+                <div class="cubes">2.3</div>
+                <div class="cubes">2.4</div>
+                <div class="cubes">2.5</div>
+            </div>
+            <div class="cubes-col">
+                <div class="cubes">3.1</div>
+                <div class="cubes">3.2</div>
+                <div class="cubes">3.3</div>
+                <div class="cubes">3.4</div>
+                <div class="cubes">3.5</div>
+            </div>
+            <div class="cubes-col">
+                <div class="cubes">4.1</div>
+                <div class="cubes">4.2</div>
+                <div class="cubes">4.3</div>
+                <div class="cubes">4.4</div>
+                <div class="cubes">4.5</div>
+            </div>
+            <div class="cubes-col">
+                <div class="cubes">5.1</div>
+                <div class="cubes" style="display: none;">5.2</div>
+                <div class="cubes">5.3</div>
+                <div class="cubes">5.4</div>
+                <div class="cubes">5.5</div>
+            </div>
+            <div class="cubes-col">
+                <div class="cubes">6.1</div>
+                <div class="cubes">6.2</div>
+                <div class="cubes">6.3</div>
+                <div class="cubes">6.4</div>
+                <div class="cubes">6.5</div>
+            </div>
+        </div>
+
     </div>
 </template>
 
@@ -34,8 +81,8 @@
 import { clearInterval } from 'timers';
 
 var aCubes = []
-const Xmax = 15
-const Ymax = 13
+const Xmax = 9
+const Ymax = 9
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -44,7 +91,7 @@ function getRandomInt(min, max) {
 for (var i = 0; i < Ymax; i++) {
    aCubes[i] = [];
    for (var j = 0; j < Xmax; j++) {
-      aCubes[i].push(getRandomInt(0, 5));
+      aCubes[i].push(getRandomInt(1, 5));
   }
 }
 
@@ -74,7 +121,7 @@ export default {
                 clearInterval(Timer)
             }
             this.addCubeOnLine()
-        }, 500)
+        }, 300)
         
         
       },
@@ -89,25 +136,29 @@ export default {
 
 
 <style>
-#cubesWrap > div > div,
-#cubes-line-wrap > div {
-    height: 40px;
-    width: 40px;
-    font-size: 10px;
+
+#cubes-wrap {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    flex-direction: row;
+}
+
+.cubes-col {
+    background-color: #EEE;
+    display: flex;
+    flex-direction: column;
+    align-content: flex-end;
+    justify-content: flex-end;
+}
+
+.cubes {
     border: 1px solid #FFF;
-    display: inline-block;
+    padding: 10px;
     color: #FFF;
+    font-size: 11px;
 }
 
-#cubesWrap,
-#cubes-line-wrap {
-    text-align: left;
-}
-
-#cubesWrap > div,
-#cubes-line-wrap > div { 
-    line-height: 1em; 
-}
 
 .blue { background-color: rgb(52, 52, 161);  }
 .red { background-color: rgb(160, 19, 19);  }
