@@ -7,6 +7,7 @@
                     v-bind:key="cube.id"
                     v-bind:class="{red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
                     v-on:click="cubeClick(x,y)"
+                    v-show="cube"
                 >
                     {{cube}}-{{x}}/{{y}}
                 </div>
@@ -30,10 +31,11 @@
 </template>
 
 <script>
+import { clearInterval } from 'timers';
 
 var aCubes = []
-var Xmax = 15
-var Ymax = 13
+const Xmax = 15
+const Ymax = 13
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -61,16 +63,16 @@ export default {
               this.cubes.push([...this.lineCubes])
               this.lineCubes.splice(0)
           } else {
-            this.lineCubes.push(getRandomInt(0, 5))
+            this.lineCubes.push(getRandomInt(1, 5))
           }
       },
 
       generateLine: function(){
-
-            
-
-
+        
         var Timer = setInterval(() => {
+            if (this.cubes.length >= Ymax) {
+                clearInterval(Timer)
+            }
             this.addCubeOnLine()
         }, 500)
         
@@ -97,7 +99,15 @@ export default {
     color: #FFF;
 }
 
-#cubesWrap > div { line-height: 1em; }
+#cubesWrap,
+#cubes-line-wrap {
+    text-align: left;
+}
+
+#cubesWrap > div,
+#cubes-line-wrap > div { 
+    line-height: 1em; 
+}
 
 .blue { background-color: rgb(52, 52, 161);  }
 .red { background-color: rgb(160, 19, 19);  }
