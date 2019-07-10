@@ -137,7 +137,8 @@ export default {
 
 <style>
 
-#cubes-wrap {
+#cubes-wrap,
+#cubes-line-wrap {
     display: flex;
     justify-content: flex-start;
     flex-wrap: nowrap;
@@ -152,7 +153,8 @@ export default {
     justify-content: flex-end;
 }
 
-.cubes {
+.cubes,
+#cubes-line-wrap > div {
     border: 1px solid #FFF;
     padding: 10px;
     color: #FFF;
