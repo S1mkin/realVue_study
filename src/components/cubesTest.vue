@@ -26,63 +26,18 @@
 
         <br>
 
-        <button v-on:click.prevent="generateLine">Начать</button>
+        <button v-on:click.prevent="generateLine" class="btn btn-outline-success">Начать</button>
 
-
-        <div id="cubes-wrap">
-            <div class="cubes-col">
-                <div class="cubes">1.1</div>
-                <div class="cubes">1.2</div>
-                <div class="cubes">1.3</div>
-                <div class="cubes">1.4</div>
-                <div class="cubes">1.5</div>
-            </div>
-            <div class="cubes-col">
-                <div class="cubes">2.1</div>
-                <div class="cubes">2.2</div>
-                <div class="cubes">2.3</div>
-                <div class="cubes">2.4</div>
-                <div class="cubes">2.5</div>
-            </div>
-            <div class="cubes-col">
-                <div class="cubes">3.1</div>
-                <div class="cubes">3.2</div>
-                <div class="cubes">3.3</div>
-                <div class="cubes">3.4</div>
-                <div class="cubes">3.5</div>
-            </div>
-            <div class="cubes-col">
-                <div class="cubes">4.1</div>
-                <div class="cubes">4.2</div>
-                <div class="cubes">4.3</div>
-                <div class="cubes">4.4</div>
-                <div class="cubes">4.5</div>
-            </div>
-            <div class="cubes-col">
-                <div class="cubes">5.1</div>
-                <div class="cubes" style="display: none;">5.2</div>
-                <div class="cubes">5.3</div>
-                <div class="cubes">5.4</div>
-                <div class="cubes">5.5</div>
-            </div>
-            <div class="cubes-col">
-                <div class="cubes">6.1</div>
-                <div class="cubes">6.2</div>
-                <div class="cubes">6.3</div>
-                <div class="cubes">6.4</div>
-                <div class="cubes">6.5</div>
-            </div>
-        </div>
 
     </div>
 </template>
 
 <script>
-import { clearInterval } from 'timers';
+
 
 var aCubes = []
-const Xmax = 9
-const Ymax = 9
+const Xmax = 10
+const Ymax = 10
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -99,7 +54,18 @@ export default {
   name: "cubes",
   data() {
     return {
-        cubes: [],
+        cubes: [
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            []
+        ],
         lineCubes: [] 
     }
   },
@@ -107,22 +73,38 @@ export default {
 
       addCubeOnLine: function(){
           if (this.lineCubes.length >= Xmax) {
-              this.cubes.push([...this.lineCubes])
-              this.lineCubes.splice(0)
+
+            for (var i = 0; i < Xmax; i++) {
+               //console.log('i: ' + i + ' cube:' + cube);
+                //this.cubes[i].splice(x, 1, 0);
+
+                this.cubes[i].push(this.lineCubes[i])
+            }
+
+
+            
+            //this.cubes.push([...this.lineCubes])
+            this.lineCubes.splice(0)
           } else {
             this.lineCubes.push(getRandomInt(1, 5))
           }
       },
 
       generateLine: function(){
-        
+  
         var Timer = setInterval(() => {
-            if (this.cubes.length >= Ymax) {
-                clearInterval(Timer)
-            }
+            
             this.addCubeOnLine()
+
+            for (var i = 0; i < Xmax; i++) {
+                if (this.cubes[i].length >= Ymax) {
+                    console.log('Timer stop')
+                    clearInterval(Timer)
+                }
+            }
+            
         }, 300)
-        
+      
         
       },
 
@@ -145,6 +127,17 @@ export default {
     flex-direction: row;
 }
 
+#cubes-wrap {
+    height: 400px;
+    width: 400px;
+    background-color: #EEE;
+}
+
+#cubes-line-wrap {
+    height: 40px;
+    width: 400px;
+}
+
 .cubes-col {
     background-color: #EEE;
     display: flex;
@@ -159,8 +152,14 @@ export default {
     padding: 10px;
     color: #FFF;
     font-size: 11px;
+    cursor: pointer;
+    height:40px;
+    width: 40px;
 }
 
+.cubes:hover {
+    border: 1px solid #000;
+}
 
 .blue { background-color: rgb(52, 52, 161);  }
 .red { background-color: rgb(160, 19, 19);  }
