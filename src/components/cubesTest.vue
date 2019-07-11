@@ -7,7 +7,7 @@
                     v-bind:key="cube.id"
                     v-bind:class="{cubes, delete: cube==0, red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
                     v-on:click="cubeClick(y,x)"
-                    v-html="x + ':' + y"
+
                 >   
                 </div>
             </div>
@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { setTimeout } from 'timers';
 
 
 var aCubes = []
@@ -113,13 +114,32 @@ export default {
       },
       
       // Delete element into array
-      cubeClick: function(x,y){
-          this.cubes[y].splice(x, 1);
+      cubeClick: function(x,y){     
+
+        this.cubes[y].splice(x, 1);
+
+            for (let i = 0; i < (Xmax-1); i++) {
+
+                // if array is empty then delete and push new in the end
+                if (this.cubes[i].length == 0) {
+                    this.cubes[i].push(...this.cubes[i+1])
+                    this.cubes[i+1].splice(0, Xmax);
+                }
+            }
+
+
+
       }
   }
 }
 
 </script>
+
+
+
+
+
+
 
 
 <style>
@@ -143,6 +163,7 @@ export default {
     height: 40px;
     width: 400px;
     background-color: #ABC;
+    margin-top: 10px;
 }
 
 .cubes-col {
