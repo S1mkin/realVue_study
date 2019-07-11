@@ -5,28 +5,29 @@
                 <div 
                     v-for="(cube, y) in cubeRow" 
                     v-bind:key="cube.id"
-                    v-bind:class="{cubes, red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
+                    v-bind:class="{cubes, delete: cube==0, red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
                     v-on:click="cubeClick(y,x)"
-                    v-show="cube"
-                >
-                    {{x}}/{{y}}
+                    v-html="x + ':' + y"
+                >   
                 </div>
             </div>
         </div>
 
-        <div id="cubes-line-wrap">
+        <div id="line-wrap">
             <div 
-                v-for="lCube in lineCubes" 
-                v-bind:key="lCube.id"
-                v-bind:class="{red: lCube==1, blue: lCube==2, green: lCube==3, yellow: lCube==4}"
+                v-for="cube in line" 
+                v-bind:key="cube.id"
+                v-bind:class="{red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
+                v-html="cube"
             >
-                {{lCube}}
             </div>
         </div>
 
         <br>
 
-        <button v-on:click.prevent="generateLine" class="btn btn-outline-success">Начать</button>
+        <button v-on:click.prevent="startLine" class="btn btn-outline-success">Начать</button> 
+        &nbsp;
+        <button v-on:click.prevent="stopLine" class="btn btn-outline-success">Остановить</button>
 
 
     </div>
@@ -46,7 +47,7 @@ function getRandomInt(min, max) {
 for (var i = 0; i < Ymax; i++) {
    aCubes[i] = [];
    for (var j = 0; j < Xmax; j++) {
-      aCubes[i].push(getRandomInt(1, 5));
+      aCubes[i].push(0);
   }
 }
 
@@ -66,50 +67,54 @@ export default {
             [],
             []
         ],
-        lineCubes: [] 
+        line: [],
+        genLine: false
     }
   },
   methods: {
 
-      addCubeOnLine: function(){
-          if (this.lineCubes.length >= Xmax) {
+      // add new line to main array and clear line
+      pushLine: function(){
+          if (this.line.length >= Xmax) {
 
             for (var i = 0; i < Xmax; i++) {
-               //console.log('i: ' + i + ' cube:' + cube);
                 //this.cubes[i].splice(x, 1, 0);
-
-                this.cubes[i].push(this.lineCubes[i])
+                //this.cubes[i].splice(0,1) // улаояеи пепвый элемент i массива
+                this.cubes[i].push(this.line[i])
             }
-
-
             
-            //this.cubes.push([...this.lineCubes])
-            this.lineCubes.splice(0)
+            //this.cubes.push([...this.line])
+            this.line.splice(0)
           } else {
-            this.lineCubes.push(getRandomInt(1, 5))
+            this.line.push(getRandomInt(1, 5))
           }
       },
 
-      generateLine: function(){
-  
-        var Timer = setInterval(() => {
-            
-            this.addCubeOnLine()
+      // On timer and start generation new line
+      startLine: function(){
+        
+        this.genLine = true;
 
-            for (var i = 0; i < Xmax; i++) {
-                if (this.cubes[i].length >= Ymax) {
-                    console.log('Timer stop')
-                    clearInterval(Timer)
-                }
+        // Generation new line and push to array
+        var Timer = setInterval(() => { 
+            this.pushLine()
+            // Stop generation new line when array is full
+            for (let i = 0; i < Xmax; i++) {
+                if (this.cubes[i].length >= Ymax) { this.genLine = false; }
             }
-            
-        }, 300)
-      
+            if (!this.genLine) { clearInterval(Timer) }
+        }, 100)   
         
       },
-
+      
+      // Off generation new line
+      stopLine: function(){
+           this.genLine = false;
+      },
+      
+      // Delete element into array
       cubeClick: function(x,y){
-          this.cubes[y].splice(x, 1, 0); // delete cube
+          this.cubes[y].splice(x, 1);
       }
   }
 }
@@ -120,26 +125,27 @@ export default {
 <style>
 
 #cubes-wrap,
-#cubes-line-wrap {
+#line-wrap {
     display: flex;
     justify-content: flex-start;
     flex-wrap: nowrap;
     flex-direction: row;
+    margin: 0 auto;
 }
 
 #cubes-wrap {
     height: 400px;
     width: 400px;
-    background-color: #EEE;
+    background-color: #EFEFEF;
 }
 
-#cubes-line-wrap {
+#line-wrap {
     height: 40px;
     width: 400px;
+    background-color: #ABC;
 }
 
 .cubes-col {
-    background-color: #EEE;
     display: flex;
     flex-direction: column;
     align-content: flex-end;
@@ -147,7 +153,7 @@ export default {
 }
 
 .cubes,
-#cubes-line-wrap > div {
+#line-wrap > div {
     border: 1px solid #FFF;
     padding: 10px;
     color: #FFF;
@@ -155,12 +161,16 @@ export default {
     cursor: pointer;
     height:40px;
     width: 40px;
+
+    opacity: 1;
+    transition: .4s linear;
 }
 
 .cubes:hover {
-    border: 1px solid #000;
+    opacity: .6;
 }
 
+.delete { display: none; }
 .blue { background-color: rgb(52, 52, 161);  }
 .red { background-color: rgb(160, 19, 19);  }
 .green { background-color: rgb(52, 133, 52);  }

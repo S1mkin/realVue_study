@@ -1,10 +1,11 @@
 <template>
   <div id="app" class="container">
-    <img alt="Vue logo" src="./assets/logo.png">
+    <!--img alt="Vue logo" src="./assets/logo.png">
     <HelloWorld msg="Vue.js App"/>
-    <mForm caption="Task Manager"/>
+    <mForm caption="Task Manager"/-->
     <br>
     <cubesTest/>
+    <br>
   </div>
 </template>
 
