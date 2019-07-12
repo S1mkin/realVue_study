@@ -3,11 +3,12 @@
         <div id="cubes-wrap">
             <div v-for="(cubeRow, x) in cubes" v-bind:key="cubeRow.id" class="cubes-col">
                 <div 
+                    class="cubes"
                     v-for="(cube, y) in cubeRow" 
-                    v-bind:key="cube.id"
-                    v-bind:class="{cubes, delete: cube==0, red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
-                    v-on:click="cubeClick(y,x)"
-
+                    :key="cube.id"
+                    :class="{delete: cube==0, red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
+                    v-on:click="cubeClick(x,y,cube)"
+                    v-html="x+':'+y"
                 >   
                 </div>
             </div>
@@ -16,8 +17,8 @@
         <div id="line-wrap">
             <div 
                 v-for="cube in line" 
-                v-bind:key="cube.id"
-                v-bind:class="{red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
+                :key="cube.id"
+                :class="{red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
                 v-html="cube"
             >
             </div>
@@ -34,9 +35,6 @@
 </template>
 
 <script>
-import { setTimeout } from 'timers';
-
-
 var aCubes = []
 const Xmax = 10
 const Ymax = 10
@@ -74,6 +72,9 @@ export default {
   },
   methods: {
 
+
+
+
       // add new line to main array and clear line
       pushLine(){
           if (this.line.length >= Xmax) {
@@ -91,6 +92,10 @@ export default {
           }
       },
 
+
+
+
+
       // On timer and start generation new line
       startLine(){
         
@@ -107,29 +112,104 @@ export default {
         }, 100)   
         
       },
-      
+
+
+
+
       // Off generation new line
       stopLine(){
            this.genLine = false;
       },
-      
+
+
+
+
       // Delete element into array
-      cubeClick(x,y){     
+      cubeClick(x, y, value){     
 
-        this.cubes[y].splice(x, 1);
+        //this.cubes[y].splice(x, 1);
 
-            for (let i = 0; i < (Xmax-1); i++) {
+        this.cubesDelete(x, y, value)
 
-                // if array is empty then delete and push new in the end
-                if (this.cubes[i].length == 0) {
-                    this.cubes[i].push(...this.cubes[i+1])
-                    this.cubes[i+1].splice(0, Xmax);
+        for (let i = 0; i < (Xmax-1); i++) {
+            // if array is empty then delete and push new in the end
+            if (this.cubes[i].length == 0) {
+                this.cubes[i].push(...this.cubes[i+1])
+                this.cubes[i+1].splice(0, Xmax);
+            }
+        }
+      },
+
+      cubesDelete(xStart, yStart, value){           
+
+            let cubeDel = (xStart, yStart, value, newValue) => {
+
+                let xNext = xStart
+                let yNext = yStart
+
+                console.log('VAL: ' + xStart + ' : ' + yStart);
+
+                //this.cubes[xStart].splice(yStart, 1, newValue);
+
+                if (yStart < (Ymax-1) && this.cubes[xStart][yStart+1] == value) {
+                    yNext = yNext + 1
+                    console.log('DEL ' + xNext + ' : ' + yNext)
+                    this.cubes[xStart].splice(yStart+1, 1, newValue);
+                    cubeDel(xStart, yStart+1, value, newValue);
+                    
                 }
+
+                if (yStart > 0 && this.cubes[xStart][yStart-1] == value) {
+                    yNext = yNext - 1
+                    console.log('DEL ' + xNext + ' : ' + yNext)
+                    this.cubes[xStart].splice(yStart-1, 1, newValue);
+                    cubeDel(xStart, yStart-1, value, newValue);
+                    
+                }
+
+
+                if (xStart < (Xmax-1) && this.cubes[xStart+1][yStart] == value) {
+                    xNext = xNext + 1
+                    console.log('DEL ' + xNext + ' : ' + yNext)
+                    this.cubes[xStart+1].splice(yStart, 1, newValue);
+                    cubeDel(xStart+1, yStart, value, newValue);
+                    
+                }
+
+                if (xStart > 0 && this.cubes[xStart-1][yStart] == value) {
+                    xNext = xNext - 1
+                    console.log('DEL ' + xNext + ' : ' + yNext)
+                    this.cubes[xStart-1].splice(yStart, 1, newValue);
+                    cubeDel(xStart-1, yStart, value, newValue);
+                    
+                }
+                
+                
+                if (xNext !== xStart || yNext !== yStart) {
+                    //console.log('DEL ' + xNext + ' : ' + yNext)
+                } else {
+                    console.log('NO DEL ' + xStart + ' : ' + yStart)
+                }
+
             }
 
+            cubeDel(xStart, yStart, value, (value*100))
 
 
+            setTimeout(() => {
+                //cubeDel(xStart, yStart, (value*100), 0)
+            }, 300)
+
+            
+
+            
+          
+          return;
       }
+
+
+
+
   }
 }
 
