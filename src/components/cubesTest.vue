@@ -52,29 +52,18 @@ for (var i = 0; i < Ymax; i++) {
 
 export default {
   name: "cubes",
+  
   data() {
     return {
-        cubes: [
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            []
-        ],
+        cubes: [[],[],[],[],[],[],[],[],[],[]],
         line: [],
         genLine: false
     }
   },
+
+
+
   methods: {
-
-
-
-
       // add new line to main array and clear line
       pushLine(){
           if (this.line.length >= Xmax) {
