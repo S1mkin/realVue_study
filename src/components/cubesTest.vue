@@ -7,7 +7,7 @@
                     v-for="(cube, y) in cubeRow" 
                     :key="cube.id"
                     :class="{delete: cube==0, red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
-                    @:click="cubeClick(x,y,cube)"
+                    v-on:click="cubeClick(x,y,cube)"
                     v-html="x+':'+y"
                 >   
                 </div>
@@ -26,9 +26,9 @@
 
         <br>
 
-        <button @:click.prevent="startLine" class="btn btn-outline-success">Начать</button> 
+        <button v-on:click="startLine" class="btn btn-outline-success">Начать</button> 
         &nbsp;
-        <button @:click.prevent="stopLine" class="btn btn-outline-success">Остановить</button>
+        <button v-on:click.prevent="stopLine" class="btn btn-outline-success">Остановить</button>
 
 
     </div>
@@ -116,33 +116,33 @@ export default {
 
       cubesDelete(xStart, yStart, value){           
 
-            let cubeDel = (xStart, yStart, value, newValue) => {
+            let oneCubeDel = (xStart, yStart, value, newValue) => {
+
 
                 if (yStart < (Ymax-1) && this.cubes[xStart][yStart+1] == value) {
                     this.cubes[xStart].splice(yStart+1, 1, newValue);
-                    cubeDel(xStart, yStart+1, value, newValue);
+                    oneCubeDel(xStart, yStart+1, value, newValue);
                 }
 
                 if (yStart > 0 && this.cubes[xStart][yStart-1] == value) {
-                    this.cubes[xStart].splice(yStart-1, 1, newValue);
-                    cubeDel(xStart, yStart-1, value, newValue);
+                     this.cubes[xStart].splice(yStart-1, 1, newValue);
+                    oneCubeDel(xStart, yStart-1, value, newValue);
                 }
 
                 if (xStart < (Xmax-1) && this.cubes[xStart+1][yStart] == value) {
                     this.cubes[xStart+1].splice(yStart, 1, newValue);
-                    cubeDel(xStart+1, yStart, value, newValue);
-                    
+                    oneCubeDel(xStart+1, yStart, value, newValue);
                 }
 
                 if (xStart > 0 && this.cubes[xStart-1][yStart] == value) {
                     this.cubes[xStart-1].splice(yStart, 1, newValue);
-                    cubeDel(xStart-1, yStart, value, newValue);
+                    oneCubeDel(xStart-1, yStart, value, newValue);
                 }
                 
 
             }
 
-            cubeDel(xStart, yStart, value, (value*100))
+            oneCubeDel(xStart, yStart, value, (value*100))
 
       }
 
