@@ -75,7 +75,7 @@ export default {
   methods: {
 
       // add new line to main array and clear line
-      pushLine: function(){
+      pushLine(){
           if (this.line.length >= Xmax) {
 
             for (var i = 0; i < Xmax; i++) {
@@ -92,7 +92,7 @@ export default {
       },
 
       // On timer and start generation new line
-      startLine: function(){
+      startLine(){
         
         this.genLine = true;
 
@@ -109,12 +109,12 @@ export default {
       },
       
       // Off generation new line
-      stopLine: function(){
+      stopLine(){
            this.genLine = false;
       },
       
       // Delete element into array
-      cubeClick: function(x,y){     
+      cubeClick(x,y){     
 
         this.cubes[y].splice(x, 1);
 
@@ -197,5 +197,10 @@ export default {
 .green { background-color: rgb(52, 133, 52);  }
 .yellow { background-color: rgb(184, 184, 33);  }
 
-
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+  opacity: 0;
+}
 </style>
