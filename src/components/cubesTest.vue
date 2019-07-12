@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { setTimeout } from 'timers';
 
 var aCubes = []
 const Xmax = 10
@@ -140,40 +141,67 @@ export default {
         }
       },
 
-      cubesDelete(xStart,yStart, value){           
+      cubesDelete(xStart, yStart, value){           
 
             let cubeDel = (xStart, yStart, value, newValue) => {
 
+                let xNext = xStart
+                let yNext = yStart
+
                 console.log('VAL: ' + xStart + ' : ' + yStart);
 
-                this.cubes[xStart].splice(yStart, 1, newValue);
+                //this.cubes[xStart].splice(yStart, 1, newValue);
 
                 if (yStart < (Ymax-1) && this.cubes[xStart][yStart+1] == value) {
+                    yNext = yNext + 1
+                    console.log('DEL ' + xNext + ' : ' + yNext)
                     this.cubes[xStart].splice(yStart+1, 1, newValue);
                     cubeDel(xStart, yStart+1, value, newValue);
+                    
                 }
 
                 if (yStart > 0 && this.cubes[xStart][yStart-1] == value) {
+                    yNext = yNext - 1
+                    console.log('DEL ' + xNext + ' : ' + yNext)
                     this.cubes[xStart].splice(yStart-1, 1, newValue);
                     cubeDel(xStart, yStart-1, value, newValue);
+                    
                 }
 
+
                 if (xStart < (Xmax-1) && this.cubes[xStart+1][yStart] == value) {
-                    this.cubes[xStart].splice(yStart, 1, newValue);
+                    xNext = xNext + 1
+                    console.log('DEL ' + xNext + ' : ' + yNext)
+                    this.cubes[xStart+1].splice(yStart, 1, newValue);
                     cubeDel(xStart+1, yStart, value, newValue);
+                    
                 }
 
                 if (xStart > 0 && this.cubes[xStart-1][yStart] == value) {
+                    xNext = xNext - 1
+                    console.log('DEL ' + xNext + ' : ' + yNext)
                     this.cubes[xStart-1].splice(yStart, 1, newValue);
                     cubeDel(xStart-1, yStart, value, newValue);
-                }                
+                    
+                }
+                
+                
+                if (xNext !== xStart || yNext !== yStart) {
+                    //console.log('DEL ' + xNext + ' : ' + yNext)
+                } else {
+                    console.log('NO DEL ' + xStart + ' : ' + yStart)
+                }
 
             }
 
-            cubeDel(xStart, yStart, value, (value*100));
+            cubeDel(xStart, yStart, value, (value*100))
 
 
-            //cubeDel(xStart, yStart, (value*100), 0);
+            setTimeout(() => {
+                //cubeDel(xStart, yStart, (value*100), 0)
+            }, 300)
+
+            
 
             
           
