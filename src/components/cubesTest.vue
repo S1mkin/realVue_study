@@ -1,20 +1,36 @@
 <template>
     <div>
         <h3>Score: {{score}}</h3>
+        
+        <div class="cubes-fields-wrap">
 
-        <div id="cubes-wrap">
-            <div v-for="(cubeRow, x) in cubes" v-bind:key="cubeRow.id" class="cubes-col">
+            <div id="cubes-wrap-clone" class="hidden"></div>
+
+            <div id="cubes-wrap">
+                    
                 <div 
-                    class="cubes"
-                    v-for="(cube, y) in cubeRow" 
-                    :key="cube.id"
-                    :class="{delete: cube==0, red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
-                    v-on:click="cubeClick(x,y,cube)"
+                    v-for="(cubeRow, x) in cubes" 
+                    :key="x" 
+                    class="cubes-col"
+                >
+                    <transition-group name="tgCubes">
+                    <div 
+                        class="cubes"
+                        v-for="(cube, y) in cubeRow" 
+                        :key="y"
+                        :class="{delete: cube==0, red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
+                        v-on:click="cubeClick(x,y,cube)"
 
-                >   
+                    >   
+                    </div>
+                    </transition-group>
+
                 </div>
+                
             </div>
+
         </div>
+
 
         <div id="line-wrap">
             <div 
@@ -36,9 +52,9 @@
     </div>
 </template>
 
-<script>
-import { setTimeout } from 'timers';
 
+
+<script>
 const Xmax = 16
 const Ymax = 14
 
@@ -59,11 +75,12 @@ export default {
     }
   },
 
+    // set start position for 
   created() {
     for (let x = 0; x < Xmax; x++) {
         this.cubes.push([])
-        for (var y = 0; y < 8; y++) {
-            this.cubes[x].push(getRandomInt(1, 5));
+        for (var y = 0; y < Ymax; y++) {
+            if (y < 8) this.cubes[x].push(getRandomInt(1, 5))
         }
     }
   },
@@ -72,9 +89,9 @@ export default {
       // add new line to main array and clear line
       pushLine(){
           if (this.line.length >= Xmax) {
-            for (var i = 0; i < Xmax; i++) {
-                if (this.cubes[i].length < Ymax) {
-                    this.cubes[i].push(this.line[i])
+            for (let x = 0; x < Xmax; x++) {
+                if (this.cubes[x].length < Ymax ) {
+                    this.cubes[x].push(this.line[x])
                 } else {
                     this.genLine = false;
                 }
@@ -180,9 +197,15 @@ export default {
 
             oneCubeDel(xStart, yStart, value, (value*100))
 
+            //document.getElementById('cubes-wrap-clone').innerHTML = document.getElementById('cubes-wrap').innerHTML;
+            //document.getElementById('cubes-wrap-clone').classList.remove("hidden")
+
             setTimeout(() => {
+
                 if (DelCubesCount >= 3) {
+
                     this.score = this.score + DelCubesCount;
+
                     for (let i = 0; i < Xmax; i++ ) {
                         for (let x = 0; x < this.cubes.length; x++) {
                             for (let y = 0; y < this.cubes[x].length; y++) {
@@ -196,7 +219,10 @@ export default {
                     oneCubeDel(xStart, yStart, (value*100), value)
                 }
                 DelCubesCount = 0;
-            }, 100);
+
+                //document.getElementById('cubes-wrap-clone').classList.add("hidden")
+
+            }, 300);
       }
 
 
@@ -215,6 +241,7 @@ export default {
 <style>
 
 #cubes-wrap,
+#cubes-wrap-clone,
 #line-wrap {
     display: flex;
     justify-content: flex-start;
@@ -223,7 +250,21 @@ export default {
     margin: 0 auto;
 }
 
-#cubes-wrap {
+.cubes-fields-wrap {
+    position: relative;
+}
+
+#cubes-wrap-clone {
+    position: absolute;
+    z-index: 9;
+    top: 0;
+    left: 235px;
+}
+
+.hidden { display: none !important; }
+
+#cubes-wrap,
+#cubes-wrap-clone {
     height: 560px;
     width: 640px;
     background-color: #EFEFEF;
@@ -260,15 +301,22 @@ export default {
 
 
 .delete { display: none; }
-.blue { background-color: rgb(52, 52, 161);  }
-.red { background-color: rgb(160, 19, 19);  }
+.blue { background-color: rgb(52, 52, 161); }
+.red { background-color: rgb(160, 19, 19); }
 .green { background-color: rgb(52, 133, 52);  }
 .yellow { background-color: rgb(184, 184, 33);  }
 
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
+
+
+.tgCubes-enter-active, .tgCubes-leave-active {
+  opacity: 1;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+.tgCubes-enter, .tgCubes-leave-to {
   opacity: 0;
 }
+
+.tgCubes-list-move {
+  transition: all 0;
+}
+
 </style>
