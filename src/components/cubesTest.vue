@@ -1,5 +1,7 @@
 <template>
     <div>
+        <h3>Score: {{score}}</h3>
+
         <div id="cubes-wrap">
             <div v-for="(cubeRow, x) in cubes" v-bind:key="cubeRow.id" class="cubes-col">
                 <div 
@@ -8,7 +10,7 @@
                     :key="cube.id"
                     :class="{delete: cube==0, red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
                     v-on:click="cubeClick(x,y,cube)"
-                    v-html="x+':'+y"
+
                 >   
                 </div>
             </div>
@@ -35,9 +37,10 @@
 </template>
 
 <script>
+import { setTimeout } from 'timers';
 
-const Xmax = 10
-const Ymax = 10
+const Xmax = 16
+const Ymax = 14
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -50,13 +53,18 @@ export default {
     return {
         cubes: [],
         line: [],
+        score: 0,
+        speed: 200,
         genLine: false
     }
   },
 
   created() {
-    for (var i = 0; i < Xmax; i++) {
+    for (let x = 0; x < Xmax; x++) {
         this.cubes.push([])
+        for (var y = 0; y < 8; y++) {
+            this.cubes[x].push(getRandomInt(1, 5));
+        }
     }
   },
 
@@ -65,7 +73,11 @@ export default {
       pushLine(){
           if (this.line.length >= Xmax) {
             for (var i = 0; i < Xmax; i++) {
-                this.cubes[i].push(this.line[i])
+                if (this.cubes[i].length < Ymax) {
+                    this.cubes[i].push(this.line[i])
+                } else {
+                    this.genLine = false;
+                }
             }
             this.line.splice(0)
           } else {
@@ -84,10 +96,13 @@ export default {
             this.pushLine()
             // Stop generation new line when array is full
             for (let i = 0; i < Xmax; i++) {
-                if (this.cubes[i].length >= Ymax) { this.genLine = false; }
+                if (this.cubes[i].length > Ymax) { 
+                    this.genLine = false; 
+                    console.log('Stop timer: ' + ' i: ' + i + ' ' +  this.cubes[i].length)
+                }
             }
             if (!this.genLine) { clearInterval(Timer) }
-        }, 100)   
+        }, this.speed)   
         
       },
 
@@ -114,29 +129,50 @@ export default {
         }
       },
 
-      cubesDelete(xStart, yStart, value){           
+      cubesDelete(xStart, yStart, value){
+          
+          // временный массив с координатами помеченных кубиков
+          let DelCubesCount = 0;
 
             let oneCubeDel = (xStart, yStart, value, newValue) => {
-
-
+            let nextArrLength = 0
+            let currentArrLength = 0
+            let yNext = yStart + (nextArrLength - currentArrLength);
+                //console.log('CurrElem: ' + xStart + ':' + yNext);
                 if (yStart < (Ymax-1) && this.cubes[xStart][yStart+1] == value) {
-                    this.cubes[xStart].splice(yStart+1, 1, newValue);
-                    oneCubeDel(xStart, yStart+1, value, newValue);
+                    this.cubes[xStart].splice(yStart+1, 1, newValue)
+                    DelCubesCount++;
+                    oneCubeDel(xStart, yStart+1, value, newValue)
                 }
 
                 if (yStart > 0 && this.cubes[xStart][yStart-1] == value) {
-                     this.cubes[xStart].splice(yStart-1, 1, newValue);
-                    oneCubeDel(xStart, yStart-1, value, newValue);
+                    this.cubes[xStart].splice(yStart-1, 1, newValue)
+                    DelCubesCount++;
+                    oneCubeDel(xStart, yStart-1, value, newValue)
                 }
 
-                if (xStart < (Xmax-1) && this.cubes[xStart+1][yStart] == value) {
-                    this.cubes[xStart+1].splice(yStart, 1, newValue);
-                    oneCubeDel(xStart+1, yStart, value, newValue);
+                if (xStart < (Xmax-1)) {
+                    nextArrLength = this.cubes[xStart+1].length
+                    currentArrLength = this.cubes[xStart].length
+                    yNext = yStart + (nextArrLength - currentArrLength);
+
+                    if (xStart < (Xmax-1) && yNext >= 0 && yNext < Ymax && this.cubes[xStart+1][yNext] == value) {
+                        this.cubes[xStart+1].splice(yNext, 1, newValue)
+                        DelCubesCount++;
+                        oneCubeDel(xStart+1, yNext, value, newValue);
+                    }
                 }
 
-                if (xStart > 0 && this.cubes[xStart-1][yStart] == value) {
-                    this.cubes[xStart-1].splice(yStart, 1, newValue);
-                    oneCubeDel(xStart-1, yStart, value, newValue);
+                if (xStart > 0) {
+                    nextArrLength = this.cubes[xStart-1].length
+                    currentArrLength = this.cubes[xStart].length
+                    yNext = yStart + (nextArrLength - currentArrLength);
+
+                    if (xStart > 0 && yNext >= 0 && yNext < Ymax && this.cubes[xStart-1][yNext] == value) {
+                        this.cubes[xStart-1].splice(yNext, 1, newValue)
+                        DelCubesCount++;
+                        oneCubeDel(xStart-1, yNext, value, newValue);
+                    }
                 }
                 
 
@@ -144,6 +180,23 @@ export default {
 
             oneCubeDel(xStart, yStart, value, (value*100))
 
+            setTimeout(() => {
+                if (DelCubesCount >= 3) {
+                    this.score = this.score + DelCubesCount;
+                    for (let i = 0; i < Xmax; i++ ) {
+                        for (let x = 0; x < this.cubes.length; x++) {
+                            for (let y = 0; y < this.cubes[x].length; y++) {
+                                if (this.cubes[x][y] >= 100) {
+                                    this.cubes[x].splice(y, 1);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    oneCubeDel(xStart, yStart, (value*100), value)
+                }
+                DelCubesCount = 0;
+            }, 100);
       }
 
 
@@ -171,14 +224,14 @@ export default {
 }
 
 #cubes-wrap {
-    height: 400px;
-    width: 400px;
+    height: 560px;
+    width: 640px;
     background-color: #EFEFEF;
 }
 
 #line-wrap {
     height: 40px;
-    width: 400px;
+    width: 640px;
     background-color: #ABC;
     margin-top: 10px;
 }
@@ -204,9 +257,7 @@ export default {
     transition: .4s linear;
 }
 
-.cubes:hover {
-    opacity: .6;
-}
+
 
 .delete { display: none; }
 .blue { background-color: rgb(52, 52, 161);  }
