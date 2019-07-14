@@ -37,7 +37,6 @@
                 v-for="cube in line" 
                 :key="cube.id"
                 :class="{red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
-                v-html="cube"
             >
             </div>
         </div>
@@ -86,7 +85,7 @@ export default {
     }
   },
 
-    // set start position for 
+    // set start position 
   created() {
     for (let x = 0; x < Xmax; x++) {
         this.cubes.push([])
@@ -116,8 +115,18 @@ export default {
 
       // On timer and start generation new line
       start(){
+    
         
-        this.gameOn = true;
+        this.score = 0
+        this.cubes = []
+        this.gameOn = true
+
+        for (let x = 0; x < Xmax; x++) {
+            this.cubes.push([])
+            for (var y = 0; y < Ymax; y++) {
+                if (y < 8) this.cubes[x].push(getRandomInt(1, 5))
+            }
+        }
 
         // Generation new line and push to array
         var Timer = setInterval(() => { 
