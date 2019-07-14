@@ -4,6 +4,7 @@
     <HelloWorld msg="Vue.js App"/>
     <mForm caption="Task Manager"/-->
     <br>
+      
     <cubesTest/>
     <br>
   </div>
@@ -19,7 +20,12 @@ export default {
   components: {
     HelloWorld,
     mForm,
-    cubesTest
+    cubesTest,
+  },
+  data() {
+    return {
+      number: 0
+    }
   }
 }
 </script>
@@ -31,6 +37,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>

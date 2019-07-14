@@ -1,35 +1,35 @@
 <template>
     <div>
-        <h3>Score: {{score}}</h3>
-        
-        <div class="cubes-fields-wrap">
-
-            <div id="cubes-wrap-clone" class="hidden"></div>
+        <h3>Score: <animateNumber :number="score"/></h3>
 
             <div id="cubes-wrap">
-                    
                 <div 
                     v-for="(cubeRow, x) in cubes" 
                     :key="x" 
                     class="cubes-col"
                 >
-                    <transition-group name="tgCubes">
+                    <transition-group name="tgCubes-row">
                     <div 
                         class="cubes"
                         v-for="(cube, y) in cubeRow" 
                         :key="y"
-                        :class="{delete: cube==0, red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
-                        v-on:click="cubeClick(x,y,cube)"
-
+                        :class="{
+                            delete: cube==0, 
+                            red: cube==1 || cube==100, 
+                            blue: cube==2 || cube==200, 
+                            green: cube==3 || cube==300, 
+                            yellow: cube==4 || cube==400, 
+                            opacity: cube>=100 || gameOn==false
+                            }"
+                        @click="cubeClick(x,y,cube)"
                     >   
                     </div>
                     </transition-group>
 
                 </div>
-                
+
             </div>
 
-        </div>
 
 
         <div id="line-wrap">
@@ -44,9 +44,14 @@
 
         <br>
 
-        <button v-on:click="startLine" class="btn btn-outline-success">Начать</button> 
-        &nbsp;
-        <button v-on:click.prevent="stopLine" class="btn btn-outline-success">Остановить</button>
+        <button 
+            v-show="!gameOn"
+            v-on:click="start" 
+            class="btn btn-outline-success"
+            v-html="'Let\'s go'"
+        >
+        </button> 
+
 
 
     </div>
@@ -55,6 +60,10 @@
 
 
 <script>
+
+import animateNumber from './animateNumber.vue'
+import { setTimeout } from 'timers';
+
 const Xmax = 16
 const Ymax = 14
 
@@ -64,14 +73,16 @@ function getRandomInt(min, max) {
 
 export default {
   name: "cubes",
-  
+  components: {
+      animateNumber
+  },
   data() {
     return {
         cubes: [],
         line: [],
         score: 0,
         speed: 200,
-        genLine: false
+        gameOn: false
     }
   },
 
@@ -93,7 +104,7 @@ export default {
                 if (this.cubes[x].length < Ymax ) {
                     this.cubes[x].push(this.line[x])
                 } else {
-                    this.genLine = false;
+                    this.gameOn = false;
                 }
             }
             this.line.splice(0)
@@ -104,9 +115,9 @@ export default {
 
 
       // On timer and start generation new line
-      startLine(){
+      start(){
         
-        this.genLine = true;
+        this.gameOn = true;
 
         // Generation new line and push to array
         var Timer = setInterval(() => { 
@@ -114,11 +125,11 @@ export default {
             // Stop generation new line when array is full
             for (let i = 0; i < Xmax; i++) {
                 if (this.cubes[i].length > Ymax) { 
-                    this.genLine = false; 
+                    this.gameOn = false; 
                     console.log('Stop timer: ' + ' i: ' + i + ' ' +  this.cubes[i].length)
                 }
             }
-            if (!this.genLine) { clearInterval(Timer) }
+            if (!this.gameOn) { clearInterval(Timer) }
         }, this.speed)   
         
       },
@@ -126,12 +137,14 @@ export default {
 
       // Off generation new line
       stopLine(){
-           this.genLine = false;
+           this.gameOn = false;
       },
 
 
       // Delete element into array
       cubeClick(x, y, value){     
+
+        if (this.gameOn == false) { return; }  
 
         //this.cubes[y].splice(x, 1);
 
@@ -139,7 +152,7 @@ export default {
 
         for (let i = 0; i < (Xmax-1); i++) {
             // if array is empty then delete and push new in the end
-            if (this.cubes[i].length == 0) {
+            if (this.cubes[i].length === 0) {
                 this.cubes[i].push(...this.cubes[i+1])
                 this.cubes[i+1].splice(0, Xmax);
             }
@@ -155,6 +168,7 @@ export default {
             let nextArrLength = 0
             let currentArrLength = 0
             let yNext = yStart + (nextArrLength - currentArrLength);
+
                 //console.log('CurrElem: ' + xStart + ':' + yNext);
                 if (yStart < (Ymax-1) && this.cubes[xStart][yStart+1] == value) {
                     this.cubes[xStart].splice(yStart+1, 1, newValue)
@@ -197,14 +211,11 @@ export default {
 
             oneCubeDel(xStart, yStart, value, (value*100))
 
-            //document.getElementById('cubes-wrap-clone').innerHTML = document.getElementById('cubes-wrap').innerHTML;
-            //document.getElementById('cubes-wrap-clone').classList.remove("hidden")
-
             setTimeout(() => {
 
                 if (DelCubesCount >= 3) {
 
-                    this.score = this.score + DelCubesCount;
+                    this.score = this.score + DelCubesCount * DelCubesCount;
 
                     for (let i = 0; i < Xmax; i++ ) {
                         for (let x = 0; x < this.cubes.length; x++) {
@@ -220,9 +231,7 @@ export default {
                 }
                 DelCubesCount = 0;
 
-                //document.getElementById('cubes-wrap-clone').classList.add("hidden")
-
-            }, 300);
+            }, 100);
       }
 
 
@@ -241,7 +250,6 @@ export default {
 <style>
 
 #cubes-wrap,
-#cubes-wrap-clone,
 #line-wrap {
     display: flex;
     justify-content: flex-start;
@@ -250,24 +258,14 @@ export default {
     margin: 0 auto;
 }
 
-.cubes-fields-wrap {
-    position: relative;
-}
-
-#cubes-wrap-clone {
-    position: absolute;
-    z-index: 9;
-    top: 0;
-    left: 235px;
-}
-
-.hidden { display: none !important; }
-
-#cubes-wrap,
-#cubes-wrap-clone {
+#cubes-wrap {
     height: 560px;
     width: 640px;
-    background-color: #EFEFEF;
+    background: #EFEFEF url('../img/cubes-bg-2.png') no-repeat;
+    background-size: cover;
+    box-shadow: 0px 0px 4px #777;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
 }
 
 #line-wrap {
@@ -284,39 +282,46 @@ export default {
     justify-content: flex-end;
 }
 
-.cubes,
-#line-wrap > div {
-    border: 1px solid #FFF;
-    padding: 10px;
-    color: #FFF;
-    font-size: 11px;
-    cursor: pointer;
-    height:40px;
-    width: 40px;
-
-    opacity: 1;
-    transition: .4s linear;
+.cubes, #line-wrap > div {
+	border: 1px solid #EEE;
+	padding: 10px;
+	color: #FFF;
+	font-size: 9px;
+	cursor: pointer;
+	height: 39px;
+	width: 38px;
+	margin: 1px;
+    box-shadow: 1px 1px 2px #555;
 }
 
-
+.cubes:hover {
+    opacity: .8;
+}
 
 .delete { display: none; }
-.blue { background-color: rgb(52, 52, 161); }
-.red { background-color: rgb(160, 19, 19); }
-.green { background-color: rgb(52, 133, 52);  }
-.yellow { background-color: rgb(184, 184, 33);  }
+.blue { background-color: rgb(50, 50, 150);  }
+.red { background-color: rgb(160, 20, 20); }
+.green { background-color: rgb(50, 150, 50);  }
+.yellow { background-color: rgb(180, 180, 30);  }
+.opacity { opacity: .5; }
 
-
-
-.tgCubes-enter-active, .tgCubes-leave-active {
-  opacity: 1;
+.tgCubes-row-enter-active, .tgCubes-row-leave-active {
+  height: 40px;
+  transition: .1s linear;
 }
-.tgCubes-enter, .tgCubes-leave-to {
-  opacity: 0;
+.tgCubes-row-enter, .tgCubes-row-leave-to {
+  height: 0;
+  transition: .1s linear;
 }
 
-.tgCubes-list-move {
-  transition: all 0;
+.tgCubes-col-enter-active, .tgCubes-col-leave-active {
+  width: 40px;
+  transition: .1s linear;
 }
+.tgCubes-col-enter, .tgCubes-col-leave-to {
+  width: 0;
+  transition: .1s linear;
+}
+
 
 </style>
