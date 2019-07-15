@@ -65,6 +65,7 @@ import { setTimeout } from 'timers';
 
 const Xmax = 16
 const Ymax = 14
+const Ystart = 5
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -80,8 +81,9 @@ export default {
         cubes: [],
         line: [],
         score: 0,
-        speed: 200,
-        gameOn: false
+        speed: 2000,
+        gameOn: false,
+        initGame: false
     }
   },
 
@@ -90,18 +92,20 @@ export default {
     for (let x = 0; x < Xmax; x++) {
         this.cubes.push([])
         for (var y = 0; y < Ymax; y++) {
-            if (y < 8) this.cubes[x].push(getRandomInt(1, 5))
+            if (y < Ystart) this.cubes[x].push(getRandomInt(1, 5))
         }
     }
   },
 
   methods: {
+
       // add new line to main array and clear line
       pushLine(){
           if (this.line.length >= Xmax) {
             for (let x = 0; x < Xmax; x++) {
                 if (this.cubes[x].length < Ymax ) {
                     this.cubes[x].push(this.line[x])
+                    if (this.cubes[x].length == Ymax) { this.playSound('attention') }
                 } else {
                     this.gameOn = false;
                 }
@@ -116,17 +120,18 @@ export default {
       // On timer and start generation new line
       start(){
     
-        
         this.score = 0
         this.cubes = []
         this.gameOn = true
 
+        // Create fields
         for (let x = 0; x < Xmax; x++) {
             this.cubes.push([])
             for (var y = 0; y < Ymax; y++) {
-                if (y < 8) this.cubes[x].push(getRandomInt(1, 5))
+                if (y < Ystart) this.cubes[x].push(getRandomInt(1, 5))
             }
         }
+
 
         // Generation new line and push to array
         var Timer = setInterval(() => { 
@@ -225,6 +230,8 @@ export default {
                 if (DelCubesCount >= 3) {
 
                     this.score = this.score + DelCubesCount * DelCubesCount;
+                    
+                    this.playSound('delete')
 
                     for (let i = 0; i < Xmax; i++ ) {
                         for (let x = 0; x < this.cubes.length; x++) {
@@ -236,11 +243,39 @@ export default {
                         }
                     }
                 } else {
+                    this.playSound('miss')
                     oneCubeDel(xStart, yStart, (value*100), value)
                 }
                 DelCubesCount = 0;
 
-            }, 100);
+            }, 80);
+      },
+
+      playSound(soundName){
+        
+        let soundPath = '';
+
+        const sound = [
+            {soundName: 'delete', soundPath: '/audio/del.wav'},
+            {soundName: 'miss', soundPath: '/audio/miss.wav'},
+            {soundName: 'attention', soundPath: '/audio/attention.wav'}
+        ]
+
+        sound.forEach(element => {
+            if (element.soundName == soundName) { 
+                soundPath = element.soundPath;
+            }
+        })
+
+        // if settings sound not null
+        if (soundPath != '' && window.HTMLAudioElement) {
+            var audio = new Audio();
+            audio.src = soundPath;
+            audio.autoplay = false;
+            audio.volume = 0.3;
+            audio.playbackRate = 1;
+            audio.play();
+        }
       }
 
 
@@ -256,7 +291,11 @@ export default {
 
 
 
-<style>
+<style lang="scss" rel="stylesheet/scss">
+
+$size-cube: 40px;
+$Xmax: 16;
+$Ymax: 14;
 
 #cubes-wrap,
 #line-wrap {
@@ -268,18 +307,16 @@ export default {
 }
 
 #cubes-wrap {
-    height: 560px;
-    width: 640px;
+    height: $Ymax * $size-cube;
+    width: $Xmax * $size-cube;
     background: #EFEFEF url('../img/cubes-bg-2.png') no-repeat;
     background-size: cover;
     box-shadow: 0px 0px 4px #777;
-    border-top-left-radius: 7px;
-    border-top-right-radius: 7px;
 }
 
 #line-wrap {
-    height: 40px;
-    width: 640px;
+    height: $size-cube;
+    width: $Xmax * $size-cube;
     background-color: #ABC;
     margin-top: 10px;
 }
@@ -291,46 +328,55 @@ export default {
     justify-content: flex-end;
 }
 
-.cubes, #line-wrap > div {
-	border: 1px solid #EEE;
-	padding: 10px;
+.cubes, 
+#line-wrap > div {
+	padding: 1px;
 	color: #FFF;
+    background-color: transparent;
 	font-size: 9px;
 	cursor: pointer;
-	height: 39px;
-	width: 38px;
-	margin: 1px;
-    box-shadow: 1px 1px 2px #555;
+	height: $size-cube;
+	width: $size-cube;
+    box-shadow: 1px 1px 1px #777;
+    position: relative;
+    border: 1px solid transparent;
+}
+
+.cubes::before,
+#line-wrap > div::before {
+	content: "";
+	position: absolute;
+	height: $size-cube - 2px;
+	width: $size-cube - 2px;
+	z-index: 9;
+	top: 1px;
+	left: 1px;
+	border: 1px solid #EEE;
 }
 
 .cubes:hover {
-    opacity: .8;
+    filter:contrast(200%);
+    -webkit-filter:contrast(200%);
 }
 
 .delete { display: none; }
-.blue { background-color: rgb(50, 50, 150);  }
-.red { background-color: rgb(160, 20, 20); }
-.green { background-color: rgb(50, 150, 50);  }
-.yellow { background-color: rgb(180, 180, 30);  }
-.opacity { opacity: .5; }
+.blue::before { background-color: rgb(50, 50, 150);  }
+.red::before { background-color: rgb(160, 20, 20); }
+.green::before { background-color: rgb(50, 150, 50);  }
+.yellow::before { background-color: rgb(180, 180, 30);  }
+.opacity {
+    opacity: .5;
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+}
 
 .tgCubes-row-enter-active, .tgCubes-row-leave-active {
-  height: 40px;
-  transition: .1s linear;
+  height: $size-cube;
+  transition: .08s linear;
 }
 .tgCubes-row-enter, .tgCubes-row-leave-to {
   height: 0;
-  transition: .1s linear;
+  transition: .08s linear;
 }
-
-.tgCubes-col-enter-active, .tgCubes-col-leave-active {
-  width: 40px;
-  transition: .1s linear;
-}
-.tgCubes-col-enter, .tgCubes-col-leave-to {
-  width: 0;
-  transition: .1s linear;
-}
-
 
 </style>
