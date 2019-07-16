@@ -22,6 +22,7 @@
                             opacity: cube>=100 || gameOn==false
                             }"
                         @click="cubeClick(x,y,cube)"
+                        v-html="x+':'+y"
                     >   
                     </div>
                     </transition-group>
@@ -63,7 +64,7 @@
 import animateNumber from './animateNumber.vue'
 import { setTimeout } from 'timers';
 
-const Xmax = 16
+const Xmax = 10
 const Ymax = 14
 const Ystart = 5
 
@@ -81,7 +82,7 @@ export default {
         cubes: [],
         line: [],
         score: 0,
-        speed: 2000,
+        speed: 400,
         gameOn: false,
         initGame: false
     }
@@ -157,20 +158,8 @@ export default {
 
       // Delete element into array
       cubeClick(x, y, value){     
-
         if (this.gameOn == false) { return; }  
-
-        //this.cubes[y].splice(x, 1);
-
         this.cubesDelete(x, y, value)
-
-        for (let i = 0; i < (Xmax-1); i++) {
-            // if array is empty then delete and push new in the end
-            if (this.cubes[i].length === 0) {
-                this.cubes[i].push(...this.cubes[i+1])
-                this.cubes[i+1].splice(0, Xmax);
-            }
-        }
       },
 
       cubesDelete(xStart, yStart, value){
@@ -233,7 +222,8 @@ export default {
                     
                     this.playSound('delete')
 
-                    for (let i = 0; i < Xmax; i++ ) {
+                    // delete all cubes >= 100
+                    for (let i = 0; i < Xmax; i++) {
                         for (let x = 0; x < this.cubes.length; x++) {
                             for (let y = 0; y < this.cubes[x].length; y++) {
                                 if (this.cubes[x][y] >= 100) {
@@ -242,6 +232,18 @@ export default {
                             }
                         }
                     }
+
+                    // if column is empty then merge column
+                    for (let i = 0; i < 5; i++) {
+                        for (let x = 0; x < (Xmax-1); x++) {
+                            if (this.cubes[x].length === 0) {
+                                this.cubes[x].push(...this.cubes[x+1])
+                                this.cubes[x+1].splice(0, Xmax);
+                            }
+                        }
+                    }
+
+
                 } else {
                     this.playSound('miss')
                     oneCubeDel(xStart, yStart, (value*100), value)
