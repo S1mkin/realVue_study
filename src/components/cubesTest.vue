@@ -90,18 +90,12 @@
 import animateNumber from './animateNumber.vue'
 import { setTimeout } from 'timers';
 
-<<<<<<< HEAD
-const Xmax = 16
-const Ymax = 14
-const Ystart = 8
-=======
 /*
 var Xmax = 10
 var Ymax = 10
 var Ystart = 5
 */
 
->>>>>>> 3105cb1a48841da0ca2b3f44f8ae157889d05cb4
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -122,12 +116,8 @@ export default {
         sizeCube: 40,
 
         score: 0,
-<<<<<<< HEAD
-        speed: 200,
-=======
         scoreLevel: 0,
 
->>>>>>> 3105cb1a48841da0ca2b3f44f8ae157889d05cb4
         gameOn: false,
         initGame: false,
         
@@ -135,13 +125,14 @@ export default {
         level: 1,
         nextLevel: 1,
         levelSettings: [
-            {id: 1, Xmax: 10, Ymax: 10, Ystart: 5, speed: 600, lines: 6},
-            {id: 2, Xmax: 11, Ymax: 10, Ystart: 6, speed: 550, lines: 8},
-            {id: 3, Xmax: 12, Ymax: 10, Ystart: 7, speed: 500, lines: 10},
-            {id: 4, Xmax: 13, Ymax: 11, Ystart: 8, speed: 450, lines: 12},
-            {id: 5, Xmax: 14, Ymax: 12, Ystart: 9, speed: 400, lines: 14},
-            {id: 6, Xmax: 15, Ymax: 13, Ystart: 10, speed: 350, lines: 16},
-            {id: 6, Xmax: 16, Ymax: 14, Ystart: 10, speed: 300, lines: 18},
+            {id: 1, Xmax: 8, Ymax: 10, Ystart: 5, speed: 600, lines: 6},
+            {id: 1, Xmax: 10, Ymax: 10, Ystart: 5, speed: 550, lines: 8},
+            {id: 2, Xmax: 11, Ymax: 10, Ystart: 6, speed: 500, lines: 10},
+            {id: 3, Xmax: 12, Ymax: 10, Ystart: 7, speed: 450, lines: 12},
+            {id: 4, Xmax: 13, Ymax: 11, Ystart: 8, speed: 400, lines: 14},
+            {id: 5, Xmax: 14, Ymax: 12, Ystart: 9, speed: 350, lines: 16},
+            {id: 6, Xmax: 15, Ymax: 13, Ystart: 10, speed: 300, lines: 18},
+            {id: 6, Xmax: 16, Ymax: 14, Ystart: 10, speed: 250, lines: 20},
         ]
     }
   },
@@ -159,12 +150,12 @@ export default {
     styleField: function () {
         return {
             height: this.levelSettings[this.level-1].Ymax * this.sizeCube + 'px',
-            width: this.levelSettings[this.level-1].Xmax * this.sizeCube + 'px'
+            width: (this.levelSettings[this.level-1].Xmax * this.sizeCube + 2) + 'px'
         } 
     },
     styleLine: function () { 
         return {
-            height: this.sizeCube + 'px',
+            height: (this.sizeCube + 2) + 'px',
             width: this.levelSettings[this.level-1].Xmax * this.sizeCube + 'px'
         } 
     }
