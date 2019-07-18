@@ -65,7 +65,7 @@ import { setTimeout } from 'timers';
 
 const Xmax = 16
 const Ymax = 14
-const Ystart = 5
+const Ystart = 8
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -81,7 +81,7 @@ export default {
         cubes: [],
         line: [],
         score: 0,
-        speed: 2000,
+        speed: 200,
         gameOn: false,
         initGame: false
     }
