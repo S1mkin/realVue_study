@@ -1,12 +1,26 @@
 <template>
     <div>
-        <p>
-            Score: <animateNumber :number="score"/> | {{scoreLevel}} <br>
-            Level: {{level}} <br>
-            Speed: {{speed}} <br>
-            Line to the end: {{LineToTheEnd}} <br>
-        </p>
-        
+
+        <div class="game-board">
+
+            <div class="game-board__item">
+                <div class="game-board__item__caption">Level</div>
+                <div class="game-board__item__value">{{level}}</div>
+            </div>
+
+            <div class="game-board__item">
+                <div class="game-board__item__caption">Score</div>
+                <div class="game-board__item__value"><animateNumber :number="score"/></div>
+            </div>
+
+            <div class="game-board__item">
+                <div class="game-board__item__caption">Line To</div>
+                <div class="game-board__item__value">{{LineToTheEnd}}</div>
+            </div>
+
+        </div>
+
+       
 
             <div 
                 id="cubes-wrap"
@@ -112,11 +126,12 @@ export default {
         nextLevel: 1,
         levelSettings: [
             {id: 1, Xmax: 10, Ymax: 10, Ystart: 5, speed: 600, lines: 6},
-            {id: 2, Xmax: 12, Ymax: 10, Ystart: 7, speed: 500, lines: 6},
-            {id: 3, Xmax: 14, Ymax: 12, Ystart: 8, speed: 400, lines: 8},
-            {id: 4, Xmax: 16, Ymax: 14, Ystart: 9, speed: 300, lines: 12},
-            {id: 5, Xmax: 16, Ymax: 14, Ystart: 10, speed: 200, lines: 16},
-            {id: 6, Xmax: 16, Ymax: 14, Ystart: 10, speed: 100, lines: 20},
+            {id: 2, Xmax: 11, Ymax: 10, Ystart: 6, speed: 550, lines: 8},
+            {id: 3, Xmax: 12, Ymax: 10, Ystart: 7, speed: 500, lines: 10},
+            {id: 4, Xmax: 13, Ymax: 11, Ystart: 8, speed: 450, lines: 12},
+            {id: 5, Xmax: 14, Ymax: 12, Ystart: 9, speed: 400, lines: 14},
+            {id: 6, Xmax: 15, Ymax: 13, Ystart: 10, speed: 350, lines: 16},
+            {id: 6, Xmax: 16, Ymax: 14, Ystart: 10, speed: 300, lines: 18},
         ]
     }
   },
@@ -373,7 +388,9 @@ $Ymax: 10;
     justify-content: flex-start;
     flex-wrap: nowrap;
     flex-direction: row;
-    margin: 0 auto;
+    outline: 10px solid #FFF;
+    margin: 15px auto;
+    box-shadow: 0px 0px 20px #000;
 }
 
 #cubes-wrap {
@@ -381,7 +398,8 @@ $Ymax: 10;
     width: $Xmax * $size-cube; */
     background: #EFEFEF url('../img/cubes-bg-2.png') no-repeat;
     background-size: cover;
-    box-shadow: 0px 0px 4px #777;
+    
+
 }
 
 #line-wrap {
@@ -440,13 +458,42 @@ $Ymax: 10;
     filter: grayscale(100%);
 }
 
-.tgCubes-row-enter-active, .tgCubes-row-leave-active {
+.tgCubes-row-enter-active, 
+.tgCubes-row-leave-active {
   height: $size-cube;
-  transition: .08s linear;
+  transition: .06s linear;
 }
+
 .tgCubes-row-enter, .tgCubes-row-leave-to {
   height: 0;
-  transition: .08s linear;
+  transition: .06s linear;
+}
+
+.game-board {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin: 0 auto 30px;
+    width: 450px;
+}
+
+.game-board__item {
+    width: 150px;
+}
+
+.game-board__item__value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #555;
+    text-align: center;
+    background-color: #FFF;
+    border-radius: 50px;
+    border: 5px solid #0A0;
+    margin: 0 10px 10px;
+}
+
+.game-board__item__caption {
+    font-weight: bold;
 }
 
 </style>

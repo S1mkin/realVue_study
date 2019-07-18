@@ -3,10 +3,9 @@
     <!--img alt="Vue logo" src="./assets/logo.png">
     <HelloWorld msg="Vue.js App"/>
     <mForm caption="Task Manager"/-->
-    <br>
-      
+
     <cubesTest/>
-    <br>
+
   </div>
 </template>
 
@@ -37,5 +36,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  padding: 30px 0;
+  margin-top: 20px;
 }
 </style>
