@@ -1,8 +1,17 @@
 <template>
     <div>
-        <h3>Score: <animateNumber :number="score"/></h3>
+        <p>
+            Score: <animateNumber :number="score"/> | {{scoreLevel}} <br>
+            Level: {{level}} <br>
+            Speed: {{speed}} <br>
+            Line to the end: {{LineToTheEnd}} <br>
+        </p>
+        
 
-            <div id="cubes-wrap">
+            <div 
+                id="cubes-wrap"
+                v-bind:style="styleField"
+            >
                 <div 
                     v-for="(cubeRow, x) in cubes" 
                     :key="x" 
@@ -33,7 +42,10 @@
 
 
 
-        <div id="line-wrap">
+        <div 
+            id="line-wrap"
+            v-bind:style="styleLine"
+        >
             <div 
                 v-for="cube in line" 
                 :key="cube.id"
@@ -48,7 +60,7 @@
             v-show="!gameOn"
             v-on:click="start" 
             class="btn btn-outline-success"
-            v-html="'Let\'s go'"
+            v-html="'Start Level ' + nextLevel"
         >
         </button> 
 
@@ -64,9 +76,12 @@
 import animateNumber from './animateNumber.vue'
 import { setTimeout } from 'timers';
 
-const Xmax = 10
-const Ymax = 14
-const Ystart = 5
+/*
+var Xmax = 10
+var Ymax = 10
+var Ystart = 5
+*/
+
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -80,20 +95,62 @@ export default {
   data() {
     return {
         cubes: [],
+        
         line: [],
+        LinePush: 0,
+
+        sizeCube: 40,
+
         score: 0,
-        speed: 400,
+        scoreLevel: 0,
+
         gameOn: false,
-        initGame: false
+        initGame: false,
+        
+
+        level: 1,
+        nextLevel: 1,
+        levelSettings: [
+            {id: 1, Xmax: 10, Ymax: 10, Ystart: 5, speed: 600, lines: 6},
+            {id: 2, Xmax: 12, Ymax: 10, Ystart: 7, speed: 500, lines: 6},
+            {id: 3, Xmax: 14, Ymax: 12, Ystart: 8, speed: 400, lines: 8},
+            {id: 4, Xmax: 16, Ymax: 14, Ystart: 9, speed: 300, lines: 12},
+            {id: 5, Xmax: 16, Ymax: 14, Ystart: 10, speed: 200, lines: 16},
+            {id: 6, Xmax: 16, Ymax: 14, Ystart: 10, speed: 100, lines: 20},
+        ]
+    }
+  },
+  computed: {
+    Xmax: function () { return this.levelSettings[this.level-1].Xmax },
+    Ymax: function () { return this.levelSettings[this.level-1].Ymax },
+    Ystart: function () { return this.levelSettings[this.level-1].Ystart },
+    speed: function () { return this.levelSettings[this.level-1].speed },
+    lines: function () { return this.levelSettings[this.level-1].lines },
+    LineToTheEnd: function () { 
+        let result = this.levelSettings[this.level-1].lines - this.LinePush;
+        if (result < 0) result = 0;
+        return result;
+    },
+    styleField: function () {
+        return {
+            height: this.levelSettings[this.level-1].Ymax * this.sizeCube + 'px',
+            width: this.levelSettings[this.level-1].Xmax * this.sizeCube + 'px'
+        } 
+    },
+    styleLine: function () { 
+        return {
+            height: this.sizeCube + 'px',
+            width: this.levelSettings[this.level-1].Xmax * this.sizeCube + 'px'
+        } 
     }
   },
 
-    // set start position 
+  // set start position 
   created() {
-    for (let x = 0; x < Xmax; x++) {
+    for (let x = 0; x < this.Xmax; x++) {
         this.cubes.push([])
-        for (var y = 0; y < Ymax; y++) {
-            if (y < Ystart) this.cubes[x].push(getRandomInt(1, 5))
+        for (var y = 0; y < this.Ymax; y++) {
+            if (y < this.Ystart) this.cubes[x].push(getRandomInt(1, 5))
         }
     }
   },
@@ -102,16 +159,30 @@ export default {
 
       // add new line to main array and clear line
       pushLine(){
-          if (this.line.length >= Xmax) {
-            for (let x = 0; x < Xmax; x++) {
-                if (this.cubes[x].length < Ymax ) {
+
+          if (this.line.length >= this.Xmax) {
+            for (let x = 0; x < this.Xmax; x++) {
+                if (this.cubes[x].length < this.Ymax ) {
                     this.cubes[x].push(this.line[x])
-                    if (this.cubes[x].length == Ymax) { this.playSound('attention') }
+                    if (this.cubes[x].length == this.Ymax) { this.playSound('attention') }
                 } else {
+                    // GAME OVER
                     this.gameOn = false;
+                    this.score = this.score - this.scoreLevel;
+                    break;
                 }
             }
+
+            // Level complete
+            if (this.gameOn && this.LineToTheEnd == 0) {
+                this.gameOn = false;
+                this.nextLevel++;
+            }
+
+            this.LinePush++;
             this.line.splice(0)
+           
+
           } else {
             this.line.push(getRandomInt(1, 5))
           }
@@ -120,39 +191,35 @@ export default {
 
       // On timer and start generation new line
       start(){
-    
-        this.score = 0
+        
+        this.level = this.nextLevel;
+        this.scoreLevel = 0
         this.cubes = []
         this.gameOn = true
+        this.LinePush = 0
 
         // Create fields
-        for (let x = 0; x < Xmax; x++) {
+        for (let x = 0; x < this.Xmax; x++) {
             this.cubes.push([])
-            for (var y = 0; y < Ymax; y++) {
-                if (y < Ystart) this.cubes[x].push(getRandomInt(1, 5))
+            for (var y = 0; y < this.Ymax; y++) {
+                if (y < this.Ystart) this.cubes[x].push(getRandomInt(1, 5))
             }
         }
 
 
         // Generation new line and push to array
-        var Timer = setInterval(() => { 
+        var Timer = setInterval(() => {
+            if (!this.gameOn) { clearInterval(Timer); return; }
             this.pushLine()
             // Stop generation new line when array is full
-            for (let i = 0; i < Xmax; i++) {
-                if (this.cubes[i].length > Ymax) { 
+            for (let i = 0; i < this.Xmax; i++) {
+                if (this.cubes[i].length > this.Ymax) { 
                     this.gameOn = false; 
                     console.log('Stop timer: ' + ' i: ' + i + ' ' +  this.cubes[i].length)
                 }
             }
-            if (!this.gameOn) { clearInterval(Timer) }
         }, this.speed)   
         
-      },
-
-
-      // Off generation new line
-      stopLine(){
-           this.gameOn = false;
       },
 
 
@@ -173,7 +240,7 @@ export default {
             let yNext = yStart + (nextArrLength - currentArrLength);
 
                 //console.log('CurrElem: ' + xStart + ':' + yNext);
-                if (yStart < (Ymax-1) && this.cubes[xStart][yStart+1] == value) {
+                if (yStart < (this.Ymax-1) && this.cubes[xStart][yStart+1] == value) {
                     this.cubes[xStart].splice(yStart+1, 1, newValue)
                     DelCubesCount++;
                     oneCubeDel(xStart, yStart+1, value, newValue)
@@ -185,12 +252,12 @@ export default {
                     oneCubeDel(xStart, yStart-1, value, newValue)
                 }
 
-                if (xStart < (Xmax-1)) {
+                if (xStart < (this.Xmax-1)) {
                     nextArrLength = this.cubes[xStart+1].length
                     currentArrLength = this.cubes[xStart].length
                     yNext = yStart + (nextArrLength - currentArrLength);
 
-                    if (xStart < (Xmax-1) && yNext >= 0 && yNext < Ymax && this.cubes[xStart+1][yNext] == value) {
+                    if (xStart < (this.Xmax-1) && yNext >= 0 && yNext < this.Ymax && this.cubes[xStart+1][yNext] == value) {
                         this.cubes[xStart+1].splice(yNext, 1, newValue)
                         DelCubesCount++;
                         oneCubeDel(xStart+1, yNext, value, newValue);
@@ -202,7 +269,7 @@ export default {
                     currentArrLength = this.cubes[xStart].length
                     yNext = yStart + (nextArrLength - currentArrLength);
 
-                    if (xStart > 0 && yNext >= 0 && yNext < Ymax && this.cubes[xStart-1][yNext] == value) {
+                    if (xStart > 0 && yNext >= 0 && yNext < this.Ymax && this.cubes[xStart-1][yNext] == value) {
                         this.cubes[xStart-1].splice(yNext, 1, newValue)
                         DelCubesCount++;
                         oneCubeDel(xStart-1, yNext, value, newValue);
@@ -218,12 +285,13 @@ export default {
 
                 if (DelCubesCount >= 3) {
 
+                    this.scoreLevel = this.scoreLevel + DelCubesCount * DelCubesCount;
                     this.score = this.score + DelCubesCount * DelCubesCount;
                     
                     this.playSound('delete')
 
                     // delete all cubes >= 100
-                    for (let i = 0; i < Xmax; i++) {
+                    for (let i = 0; i < this.Xmax; i++) {
                         for (let x = 0; x < this.cubes.length; x++) {
                             for (let y = 0; y < this.cubes[x].length; y++) {
                                 if (this.cubes[x][y] >= 100) {
@@ -235,10 +303,10 @@ export default {
 
                     // if column is empty then merge column
                     for (let i = 0; i < 5; i++) {
-                        for (let x = 0; x < (Xmax-1); x++) {
+                        for (let x = 0; x < (this.Xmax-1); x++) {
                             if (this.cubes[x].length === 0) {
                                 this.cubes[x].push(...this.cubes[x+1])
-                                this.cubes[x+1].splice(0, Xmax);
+                                this.cubes[x+1].splice(0, this.Xmax);
                             }
                         }
                     }
@@ -296,8 +364,8 @@ export default {
 <style lang="scss" rel="stylesheet/scss">
 
 $size-cube: 40px;
-$Xmax: 16;
-$Ymax: 14;
+$Xmax: 10;
+$Ymax: 10;
 
 #cubes-wrap,
 #line-wrap {
@@ -309,16 +377,16 @@ $Ymax: 14;
 }
 
 #cubes-wrap {
-    height: $Ymax * $size-cube;
-    width: $Xmax * $size-cube;
+   /* height: $Ymax * $size-cube;
+    width: $Xmax * $size-cube; */
     background: #EFEFEF url('../img/cubes-bg-2.png') no-repeat;
     background-size: cover;
     box-shadow: 0px 0px 4px #777;
 }
 
 #line-wrap {
-    height: $size-cube;
-    width: $Xmax * $size-cube;
+  /*  height: $size-cube;
+    width: $Xmax * $size-cube; */
     background-color: #ABC;
     margin-top: 10px;
 }
