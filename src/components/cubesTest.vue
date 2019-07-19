@@ -230,8 +230,7 @@ export default {
             // Stop generation new line when array is full
             for (let i = 0; i < this.Xmax; i++) {
                 if (this.cubes[i].length > this.Ymax) { 
-                    this.gameOn = false; 
-                    console.log('Stop timer: ' + ' i: ' + i + ' ' +  this.cubes[i].length)
+                    this.gameOn = false;
                 }
             }
         }, this.speed)   
@@ -395,16 +394,16 @@ $Ymax: 10;
 }
 
 #cubes-wrap {
-   /* height: $Ymax * $size-cube;
+    /* height: $Ymax * $size-cube;
     width: $Xmax * $size-cube; */
     background: #EFEFEF url('../img/cubes-bg-2.png') no-repeat;
     background-size: cover;
-    
+
 
 }
 
 #line-wrap {
-  /*  height: $size-cube;
+    /*  height: $size-cube;
     width: $Xmax * $size-cube; */
     background-color: #ABC;
     margin-top: 10px;
@@ -417,57 +416,73 @@ $Ymax: 10;
     justify-content: flex-end;
 }
 
-.cubes, 
-#line-wrap > div {
-	padding: 1px;
-	color: #FFF;
+.cubes,
+#line-wrap>div {
+    padding: 1px;
+    color: #FFF;
     background-color: transparent;
-	font-size: 9px;
-	cursor: pointer;
-	height: $size-cube;
-	width: $size-cube;
+    font-size: 9px;
+    cursor: pointer;
+    height: $size-cube;
+    width: $size-cube;
     box-shadow: 1px 1px 1px #777;
     position: relative;
     border: 1px solid transparent;
 }
 
 .cubes::before,
-#line-wrap > div::before {
-	content: "";
-	position: absolute;
-	height: $size-cube - 2px;
-	width: $size-cube - 2px;
-	z-index: 9;
-	top: 1px;
-	left: 1px;
-	border: 1px solid #EEE;
+#line-wrap>div::before {
+    content: "";
+    position: absolute;
+    height: $size-cube - 2px;
+    width: $size-cube - 2px;
+    z-index: 9;
+    top: 1px;
+    left: 1px;
+    border: 1px solid #EEE;
 }
 
 .cubes:hover {
-    filter:contrast(200%);
-    -webkit-filter:contrast(200%);
+    filter: contrast(200%);
+    -webkit-filter: contrast(200%);
 }
 
-.delete { display: none; }
-.blue::before { background-color: rgb(50, 50, 150);  }
-.red::before { background-color: rgb(160, 20, 20); }
-.green::before { background-color: rgb(50, 150, 50);  }
-.yellow::before { background-color: rgb(180, 180, 30);  }
+.delete {
+    display: none;
+}
+
+.blue::before {
+    background-color: rgb(50, 50, 150);
+}
+
+.red::before {
+    background-color: rgb(160, 20, 20);
+}
+
+.green::before {
+    background-color: rgb(50, 150, 50);
+}
+
+.yellow::before {
+    background-color: rgb(180, 180, 30);
+}
+
 .opacity {
     opacity: .5;
     -webkit-filter: grayscale(100%);
     filter: grayscale(100%);
 }
 
-.tgCubes-row-enter-active, 
+.tgCubes-row-enter-active,
 .tgCubes-row-leave-active {
-  height: $size-cube;
-  transition: .06s linear;
+    height: $size-cube;
+    transition: .06s linear;
 }
 
-.tgCubes-row-enter, .tgCubes-row-leave-to {
-  height: 0;
-  transition: .06s linear;
+.tgCubes-row-enter,
+.tgCubes-row-leave-to {
+    height: 0;
+    transition: .06s linear;
 }
 
 .game-board {
