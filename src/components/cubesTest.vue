@@ -285,12 +285,12 @@ export default {
 
                 // check color
                 let InColor = (value1, value2) => {
-                    let output = false;
-                    if ((value1 >= 10 && value1 < 20) && (value2 >= 10 && value2 < 20)) output = true;
-                    if ((value1 >= 20 && value1 < 30) && (value2 >= 20 && value2 < 30)) output = true;
-                    if ((value1 >= 30 && value1 < 40) && (value2 >= 30 && value2 < 40)) output = true;
-                    if ((value1 >= 40 && value1 < 50) && (value2 >= 40 && value2 < 50)) output = true;
-                    return output;
+                    if (value1 == value2) return true;
+                    if ((value1 >= 10 && value1 < 20) && (value2 >= 10 && value2 < 20)) return true;
+                    if ((value1 >= 20 && value1 < 30) && (value2 >= 20 && value2 < 30)) return true;
+                    if ((value1 >= 30 && value1 < 40) && (value2 >= 30 && value2 < 40)) return true;
+                    if ((value1 >= 40 && value1 < 50) && (value2 >= 40 && value2 < 50)) return true;
+                    return false;
                 }
 
                 let nextArrLength = 0
