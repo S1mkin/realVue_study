@@ -15,7 +15,7 @@
 
             <div class="game-board__item">
                 <div class="game-board__item__caption">Line To</div>
-                <div class="game-board__item__value">{{LineToTheEnd}}</div>
+                <div class="game-board__item__value">{{LineToTheEnd}} | {{getCountPush}} </div>
             </div>
 
         </div>
@@ -82,6 +82,8 @@
 import animateNumber from './animateNumber.vue'
 import { setTimeout } from 'timers';
 
+import {mapGetters} from 'vuex'
+
 /*
 var Xmax = 10
 var Ymax = 10
@@ -129,6 +131,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(["getCountPush"]),
     Xmax: function () { return this.levelSettings[this.level-1].Xmax },
     Ymax: function () { return this.levelSettings[this.level-1].Ymax },
     Ystart: function () { return this.levelSettings[this.level-1].Ystart },
@@ -189,7 +192,10 @@ export default {
                 this.nextLevel++;
             }
 
-            this.LinePush++;
+            //this.$store.dispatch('pushLine');
+            this.$store.commit('increment');
+
+            this.LinePush++
             this.line.splice(0)
            
 
@@ -539,13 +545,13 @@ $Ymax: 10;
 .tgCubes-row-enter-active,
 .tgCubes-row-leave-active {
     height: $size-cube;
-    transition: .07s linear;
+    transition: .1s linear;
 }
 
 .tgCubes-row-enter,
 .tgCubes-row-leave-to {
     height: 0;
-    transition: .07s linear;
+    transition: .1s linear;
 }
 
 .game-board {

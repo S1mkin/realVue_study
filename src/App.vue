@@ -15,11 +15,6 @@ export default {
   components: {
     cubes
   },
-  data() {
-    return {
-      number: 0
-    }
-  }
 }
 </script>
 
