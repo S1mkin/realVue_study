@@ -37,15 +37,15 @@
                         v-for="(cube, y) in cubeRow" 
                         :key="y"
                         :class="{
-                            delete: cube==0, 
-                            red: cube==1 || cube==100, 
-                            blue: cube==2 || cube==200, 
-                            green: cube==3 || cube==300, 
-                            yellow: cube==4 || cube==400, 
-                            opacity: cube>=100 || gameOn==false
-                            }"
+    delete: cube==0, 
+    red: ((cube >= 10 && cube < 20) || cube == 100), 
+    blue: ((cube >= 20 && cube < 30) || cube == 200), 
+    green: ((cube >= 30 && cube < 40) || cube == 300), 
+    yellow: ((cube >= 40 && cube < 50) || cube == 400),
+    heart: (cube == 11 || cube == 21 || cube == 31 || cube == 41), 
+    opacity: (cube >= 100 || gameOn == false)
+}"
                         @click="cubeClick(x,y,cube)"
-                        v-html="x+':'+y"
                     >   
                     </div>
                     </transition-group>
@@ -63,7 +63,7 @@
             <div 
                 v-for="cube in line" 
                 :key="cube.id"
-                :class="{red: cube==1, blue: cube==2, green: cube==3, yellow: cube==4}"
+                :class="setClass(cube)"
             >
             </div>
         </div>
@@ -78,7 +78,7 @@
         >
         </button> 
 
-
+    <div data-name="heart-full-outline" data-code="0xe085" data-match="like,favourite,love heart full outline " class="icon"><span class="typcn typcn-heart-full-outline"></span></div>
 
     </div>
 </template>
@@ -125,7 +125,7 @@ export default {
         level: 1,
         nextLevel: 1,
         levelSettings: [
-            {id: 1, Xmax: 8, Ymax: 10, Ystart: 5, speed: 600, lines: 6},
+            {id: 1, Xmax: 14, Ymax: 16, Ystart: 7, speed: 500, lines: 20},
             {id: 1, Xmax: 10, Ymax: 10, Ystart: 5, speed: 550, lines: 8},
             {id: 2, Xmax: 11, Ymax: 10, Ystart: 6, speed: 500, lines: 10},
             {id: 3, Xmax: 12, Ymax: 10, Ystart: 7, speed: 450, lines: 12},
@@ -147,12 +147,14 @@ export default {
         if (result < 0) result = 0;
         return result;
     },
+    // style for general line
     styleField: function () {
         return {
             height: this.levelSettings[this.level-1].Ymax * this.sizeCube + 'px',
             width: (this.levelSettings[this.level-1].Xmax * this.sizeCube + 2) + 'px'
         } 
     },
+    // style for line
     styleLine: function () { 
         return {
             height: (this.sizeCube + 2) + 'px',
@@ -166,7 +168,7 @@ export default {
     for (let x = 0; x < this.Xmax; x++) {
         this.cubes.push([])
         for (var y = 0; y < this.Ymax; y++) {
-            if (y < this.Ystart) this.cubes[x].push(getRandomInt(1, 5))
+            if (y < this.Ystart) this.cubes[x].push(getRandomInt(1, 5) * 10)
         }
     }
   },
@@ -200,7 +202,22 @@ export default {
            
 
           } else {
-            this.line.push(getRandomInt(1, 5))
+            
+            let genRandCube = getRandomInt(1, 5) * 10;
+            let rnd = getRandomInt(1, 100)
+
+            if (rnd < 91) {
+                genRandCube = getRandomInt(1, 5) * 10;
+            }
+
+            if (rnd > 90) {
+                genRandCube = getRandomInt(1, 5) * 10 + 1;
+            }
+
+
+
+
+            this.line.push(genRandCube)
           }
       },
 
@@ -218,7 +235,7 @@ export default {
         for (let x = 0; x < this.Xmax; x++) {
             this.cubes.push([])
             for (var y = 0; y < this.Ymax; y++) {
-                if (y < this.Ystart) this.cubes[x].push(getRandomInt(1, 5))
+                if (y < this.Ystart) this.cubes[x].push(getRandomInt(1, 5) * 10)
             }
         }
 
@@ -237,6 +254,21 @@ export default {
         
       },
 
+      // set class 
+      setClass(cube){
+          let output = 'delete'
+          if ((cube >= 10 && cube < 20) || cube == 100) output = 'red'
+          if ((cube >= 20 && cube < 30) || cube == 200) output = 'blue'
+          if ((cube >= 30 && cube < 40) || cube == 300) output = 'green'
+          if ((cube >= 40 && cube < 50) || cube == 400) output = 'yellow'
+
+          
+          if (cube == 11 || cube == 21 || cube == 31 || cube == 41) output = output + ' heart'
+
+          if (cube >= 100 || this.gameOn == false) output = output + ' opacity'
+
+          return output;                
+      },
 
       // Delete element into array
       cubeClick(x, y, value){     
@@ -246,22 +278,33 @@ export default {
 
       cubesDelete(xStart, yStart, value){
           
-          // временный массив с координатами помеченных кубиков
+          // counter cubes with label to delete
           let DelCubesCount = 0;
 
             let oneCubeDel = (xStart, yStart, value, newValue) => {
-            let nextArrLength = 0
-            let currentArrLength = 0
-            let yNext = yStart + (nextArrLength - currentArrLength);
+
+                // check color
+                let InColor = (value1, value2) => {
+                    let output = false;
+                    if ((value1 >= 10 && value1 < 20) && (value2 >= 10 && value2 < 20)) output = true;
+                    if ((value1 >= 20 && value1 < 30) && (value2 >= 20 && value2 < 30)) output = true;
+                    if ((value1 >= 30 && value1 < 40) && (value2 >= 30 && value2 < 40)) output = true;
+                    if ((value1 >= 40 && value1 < 50) && (value2 >= 40 && value2 < 50)) output = true;
+                    return output;
+                }
+
+                let nextArrLength = 0
+                let currentArrLength = 0
+                let yNext = yStart + (nextArrLength - currentArrLength);
 
                 //console.log('CurrElem: ' + xStart + ':' + yNext);
-                if (yStart < (this.Ymax-1) && this.cubes[xStart][yStart+1] == value) {
+                if (yStart < (this.Ymax-1) && InColor(this.cubes[xStart][yStart+1], value)) {
                     this.cubes[xStart].splice(yStart+1, 1, newValue)
                     DelCubesCount++;
                     oneCubeDel(xStart, yStart+1, value, newValue)
                 }
 
-                if (yStart > 0 && this.cubes[xStart][yStart-1] == value) {
+                if (yStart > 0 && InColor(this.cubes[xStart][yStart-1], value)) {
                     this.cubes[xStart].splice(yStart-1, 1, newValue)
                     DelCubesCount++;
                     oneCubeDel(xStart, yStart-1, value, newValue)
@@ -272,7 +315,7 @@ export default {
                     currentArrLength = this.cubes[xStart].length
                     yNext = yStart + (nextArrLength - currentArrLength);
 
-                    if (xStart < (this.Xmax-1) && yNext >= 0 && yNext < this.Ymax && this.cubes[xStart+1][yNext] == value) {
+                    if (xStart < (this.Xmax-1) && yNext >= 0 && yNext < this.Ymax && InColor(this.cubes[xStart+1][yNext], value)) {
                         this.cubes[xStart+1].splice(yNext, 1, newValue)
                         DelCubesCount++;
                         oneCubeDel(xStart+1, yNext, value, newValue);
@@ -284,7 +327,7 @@ export default {
                     currentArrLength = this.cubes[xStart].length
                     yNext = yStart + (nextArrLength - currentArrLength);
 
-                    if (xStart > 0 && yNext >= 0 && yNext < this.Ymax && this.cubes[xStart-1][yNext] == value) {
+                    if (xStart > 0 && yNext >= 0 && yNext < this.Ymax && InColor(this.cubes[xStart-1][yNext], value)) {
                         this.cubes[xStart-1].splice(yNext, 1, newValue)
                         DelCubesCount++;
                         oneCubeDel(xStart-1, yNext, value, newValue);
@@ -382,6 +425,17 @@ $size-cube: 40px;
 $Xmax: 10;
 $Ymax: 10;
 
+@font-face {
+  font-family: 'icomoon';
+  src:  url('../font/icomoon.eot?noyn6e');
+  src:  url('../font/icomoon.eot?noyn6e#iefix') format('embedded-opentype'),
+    url('../font/icomoon.ttf?noyn6e') format('truetype'),
+    url('../font/icomoon.woff?noyn6e') format('woff'),
+    url('../font/icomoon.svg?noyn6e#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
 #cubes-wrap,
 #line-wrap {
     display: flex;
@@ -433,6 +487,9 @@ $Ymax: 10;
 .cubes::before,
 #line-wrap>div::before {
     content: "";
+    font-family: 'icomoon';
+    font-size: 26px;
+    line-height: 36px;
     position: absolute;
     height: $size-cube - 2px;
     width: $size-cube - 2px;
@@ -467,6 +524,12 @@ $Ymax: 10;
     background-color: rgb(180, 180, 30);
 }
 
+.heart::before {
+    content: "\e9da" !important;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+
 .opacity {
     opacity: .5;
     -webkit-filter: grayscale(100%);
@@ -476,13 +539,13 @@ $Ymax: 10;
 .tgCubes-row-enter-active,
 .tgCubes-row-leave-active {
     height: $size-cube;
-    transition: .06s linear;
+    transition: .07s linear;
 }
 
 .tgCubes-row-enter,
 .tgCubes-row-leave-to {
     height: 0;
-    transition: .06s linear;
+    transition: .07s linear;
 }
 
 .game-board {
