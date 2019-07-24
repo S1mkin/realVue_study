@@ -1,25 +1,19 @@
 <template>
   <div id="app" class="container">
-    <!--img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Vue.js App"/>
-    <mForm caption="Task Manager"/-->
 
-    <cubesTest/>
+    <cubes/>
 
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-import mForm from './components/form.vue'
-import cubesTest from './components/cubesTest.vue'
+
+import cubes from './components/cubes.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld,
-    mForm,
-    cubesTest,
+    cubes
   },
   data() {
     return {
