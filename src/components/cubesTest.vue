@@ -36,15 +36,7 @@
                         class="cubes"
                         v-for="(cube, y) in cubeRow" 
                         :key="y"
-                        :class="{
-    delete: cube==0, 
-    red: ((cube >= 10 && cube < 20) || cube == 100), 
-    blue: ((cube >= 20 && cube < 30) || cube == 200), 
-    green: ((cube >= 30 && cube < 40) || cube == 300), 
-    yellow: ((cube >= 40 && cube < 50) || cube == 400),
-    heart: (cube == 11 || cube == 21 || cube == 31 || cube == 41), 
-    opacity: (cube >= 100 || gameOn == false)
-}"
+                        :class="setClass(cube)"
                         @click="cubeClick(x,y,cube)"
                     >   
                     </div>
@@ -208,12 +200,15 @@ export default {
 
             if (rnd < 91) {
                 genRandCube = getRandomInt(1, 5) * 10;
-            }
+            } 
 
-            if (rnd > 90) {
+            if (rnd > 90 && rnd < 95) {
                 genRandCube = getRandomInt(1, 5) * 10 + 1;
             }
 
+            if (rnd > 94) {
+                genRandCube = 60;
+            }
 
 
 
@@ -261,6 +256,7 @@ export default {
           if ((cube >= 20 && cube < 30) || cube == 200) output = 'blue'
           if ((cube >= 30 && cube < 40) || cube == 300) output = 'green'
           if ((cube >= 40 && cube < 50) || cube == 400) output = 'yellow'
+          if ((cube >= 60 && cube < 70) || cube == 400) output = 'black'
 
           
           if (cube == 11 || cube == 21 || cube == 31 || cube == 41) output = output + ' heart'
@@ -522,6 +518,10 @@ $Ymax: 10;
 
 .yellow::before {
     background-color: rgb(180, 180, 30);
+}
+
+.black::before {
+    background-color: rgb(0, 0, 0);
 }
 
 .heart::before {
