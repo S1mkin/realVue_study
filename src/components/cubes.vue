@@ -539,13 +539,13 @@ $Ymax: 10;
 .tgCubes-row-enter-active,
 .tgCubes-row-leave-active {
     height: $size-cube;
-    transition: .07s linear;
+    transition: .1s linear;
 }
 
 .tgCubes-row-enter,
 .tgCubes-row-leave-to {
     height: 0;
-    transition: .07s linear;
+    transition: .1s linear;
 }
 
 .game-board {
