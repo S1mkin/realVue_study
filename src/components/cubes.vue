@@ -15,7 +15,7 @@
 
             <div class="game-board__item">
                 <div class="game-board__item__caption">Line To</div>
-                <div class="game-board__item__value">{{LineToTheEnd}} | {{getCountPush}} </div>
+                <div class="game-board__item__value">{{LineToTheEnd}} | {{getLineToTheEnd}} </div>
             </div>
 
         </div>
@@ -131,7 +131,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["getCountPush"]),
+    ...mapGetters(["getCountPush", "getLineToTheEnd"]),
     Xmax: function () { return this.levelSettings[this.level-1].Xmax },
     Ymax: function () { return this.levelSettings[this.level-1].Ymax },
     Ystart: function () { return this.levelSettings[this.level-1].Ystart },
@@ -193,9 +193,9 @@ export default {
             }
 
             //this.$store.dispatch('pushLine');
-            this.$store.commit('increment');
+            this.LinePush++; this.$store.commit('incLinePushCounter');
 
-            this.LinePush++
+            
             this.line.splice(0)
            
 
@@ -230,7 +230,7 @@ export default {
         this.scoreLevel = 0
         this.cubes = []
         this.gameOn = true
-        this.LinePush = 0
+        this.LinePush = 0; this.$store.commit('clearLinePushCounter');
 
         // Create fields
         for (let x = 0; x < this.Xmax; x++) {
