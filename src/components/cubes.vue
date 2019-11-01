@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="realcubes">
 
         <div class="game-board">
 
@@ -117,14 +117,14 @@ export default {
         level: 1,
         nextLevel: 1,
         levelSettings: [
-            {id: 1, Xmax: 14, Ymax: 16, Ystart: 7, speed: 500, lines: 20},
+            //{id: 1, Xmax: 14, Ymax: 16, Ystart: 7, speed: 500, lines: 20},
             {id: 1, Xmax: 10, Ymax: 10, Ystart: 5, speed: 550, lines: 8},
             {id: 2, Xmax: 11, Ymax: 10, Ystart: 6, speed: 500, lines: 10},
             {id: 3, Xmax: 12, Ymax: 10, Ystart: 7, speed: 450, lines: 12},
             {id: 4, Xmax: 13, Ymax: 11, Ystart: 8, speed: 400, lines: 14},
             {id: 5, Xmax: 14, Ymax: 12, Ystart: 9, speed: 350, lines: 16},
-            {id: 6, Xmax: 15, Ymax: 13, Ystart: 10, speed: 300, lines: 18},
-            {id: 6, Xmax: 16, Ymax: 14, Ystart: 10, speed: 250, lines: 20},
+            //{id: 6, Xmax: 15, Ymax: 13, Ystart: 10, speed: 300, lines: 18},
+            //{id: 7, Xmax: 16, Ymax: 14, Ystart: 10, speed: 250, lines: 20},
         ]
     }
   },
@@ -198,6 +198,10 @@ export default {
             let genRandCube = getRandomInt(1, 5) * 10;
             let rnd = getRandomInt(1, 100)
 
+            genRandCube = getRandomInt(1, 5) * 10;
+
+            /*
+
             if (rnd < 91) {
                 genRandCube = getRandomInt(1, 5) * 10;
             } 
@@ -209,6 +213,8 @@ export default {
             if (rnd > 94) {
                 genRandCube = 60;
             }
+
+            */
 
 
 
@@ -432,6 +438,12 @@ $Ymax: 10;
   font-style: normal;
 }
 
+#realcubes *,
+#realcubes ::after,
+#realcubes ::before {
+    box-sizing: border-box;
+}
+
 #cubes-wrap,
 #line-wrap {
     display: flex;
@@ -574,5 +586,26 @@ $Ymax: 10;
 .game-board__item__caption {
     font-weight: bold;
 }
+
+
+.btn-outline-success {
+    color: #28a745;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid #28a745;
+    border-radius: .25rem;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.btn-outline-success:hover {
+    color: #FFF;
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
 
 </style>
